@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="app_name">SoT Treasure Calculator</string>
+
+    <!--  REMOTE DATA ERRORS  -->
+    <string name="error_bad_request">Invalid request. Please check your input and try again.</string>
+    <string name="error_unauthorized">You are not logged in. Please sign in to continue.</string>
+    <string name="error_forbidden">You don\'t have permission to perform this action.</string>
+    <string name="error_not_found">The requested resource could not be found.</string>
+    <string name="error_request_timeout">The request timed out. Please try again.</string>
+    <string name="error_too_many_requests">Too many requests. Please wait a moment and try again.</string>
+    <string name="error_internal_server_error">Something went wrong on our end. Please try again later.</string>
+    <string name="error_no_internet">No internet connection. Please check your network and try again.</string>
+    <string name="error_serialization">Failed to process the response. Please try again.</string>
+    <string name="error_unknown">An unexpected error occurred. Please try again.</string>
+
+    <!--  LOCAL DATA ERRORS  -->
+    <string name="error_disk_full">Not enough storage space. Please free up space and try again.</string>
+
+    <!--  VALIDATION ERRORS  -->
+    <string name="error_empty_field">This field cannot be empty.</string>
+    <string name="error_below_minimum_value">Value must be at least %1$s.</string>
+    <string name="error_above_maximum_value">Value must be no more than %1$s.</string>
+    <string name="error_exact_value_required">Value must be exactly %1$s.</string>
+    <string name="error_invalid_characters">This field contains invalid characters.</string>
+    <string name="error_invalid_format">Invalid format. Please check your input.</string>
+    <string name="error_below_minimum_length">Must be at least %1$d characters.</string>
+    <string name="error_above_maximum_length">Must be no more than %1$d characters.</string>
+    <string name="error_exact_length_required">Must be exactly %1$d characters.</string>
 </resources>

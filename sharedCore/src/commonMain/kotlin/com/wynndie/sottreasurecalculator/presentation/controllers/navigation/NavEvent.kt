@@ -1,0 +1,3 @@
+package com.wynndie.sottreasurecalculator.presentation.controllers.navigation
+
+interface NavEvent
