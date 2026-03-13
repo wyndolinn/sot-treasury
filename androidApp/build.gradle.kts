@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.sharedCore)
+    implementation(projects.sharedApp)
 
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.androidx.activity.compose)

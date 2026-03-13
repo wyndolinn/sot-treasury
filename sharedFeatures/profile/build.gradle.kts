@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
@@ -42,20 +41,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.sharedCore)
-            implementation(projects.sharedResources)
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
-        }
-
-        androidMain.dependencies {
-            implementation(projects.sharedCore)
-            implementation(projects.sharedResources)
-        }
-
-        iosMain.dependencies {
-            implementation(projects.sharedCore)
-            implementation(projects.sharedResources)
         }
     }
 }

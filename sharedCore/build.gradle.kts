@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
@@ -23,7 +22,7 @@ kotlin {
 
         androidResources.enable = true
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -41,8 +40,6 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            api(projects.sharedResources)
-
             api(libs.compose.uiToolingPreview)
             api(libs.androidx.activity.compose)
 
@@ -59,7 +56,6 @@ kotlin {
             api(libs.compose.ui)
             api(libs.compose.components.resources)
             api(libs.compose.uiToolingPreview)
-            api(libs.androidx.lifecycle.runtimeCompose)
 
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.androidx.lifecycle.runtimeCompose)
@@ -69,7 +65,6 @@ kotlin {
             api(libs.koin.compose.viewmodel)
             api(libs.koin.core)
 
-            implementation(libs.jetbrains.compose.navigation)
             api(libs.kotlinx.serialization.json)
             api(libs.bundles.ktor)
             api(libs.bundles.coil)
@@ -85,7 +80,6 @@ kotlin {
         }
 
         iosMain.dependencies {
-            api(projects.sharedResources)
             api(libs.ktor.client.darwin)
         }
     }
@@ -98,4 +92,3 @@ dependencies {
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
-

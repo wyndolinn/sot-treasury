@@ -32,7 +32,8 @@ dependencyResolutionManagement {
 }
 
 include(":androidApp")
-include(":sharedResources")
+include(":sharedApp")
 include(":sharedCore")
+include(":sharedResources")
 include(":sharedFeatures:profile")
 include(":sharedFeatures:calculator")
