@@ -1,5 +1,7 @@
 package com.wynndie.sottreasurecalculator.sharedCore.navHosts
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -40,24 +42,28 @@ fun MainNavHost(
         startDestination
     )
 
-    NavDisplay(
-        modifier = modifier,
-        backStack = mainBackStack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
-            entry<Route.MainNavGraph.Treasure> {
-                val viewModel = koinViewModel<TreasureViewModel>()
+    Scaffold(
+        modifier = modifier
+    ) { innerPadding ->
+        NavDisplay(
+            modifier = Modifier.padding(innerPadding),
+            backStack = mainBackStack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry<Route.MainNavGraph.Treasure> {
+                    val viewModel = koinViewModel<TreasureViewModel>()
 
-                TreasureScreenRoot(viewModel = viewModel)
-            }
-            entry<Route.MainNavGraph.Events> {
-                val viewModel = koinViewModel<EventsViewModel>()
+                    TreasureScreenRoot(viewModel = viewModel)
+                }
+                entry<Route.MainNavGraph.Events> {
+                    val viewModel = koinViewModel<EventsViewModel>()
 
-                EventsScreenRoot(viewModel = viewModel)
+                    EventsScreenRoot(viewModel = viewModel)
+                }
             }
-        }
-    )
+        )
+    }
 }

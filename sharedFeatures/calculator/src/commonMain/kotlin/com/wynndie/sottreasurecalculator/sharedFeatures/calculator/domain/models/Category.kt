@@ -1,7 +1,7 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models
 
-data class EventItem(
+data class Category(
     val id: Int,
     val title: String,
-    val treasure: List<TreasureItem>
+    val subcategories: List<Subcategory>
 )

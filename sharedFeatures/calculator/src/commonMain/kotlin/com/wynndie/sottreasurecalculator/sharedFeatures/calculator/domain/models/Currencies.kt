@@ -1,6 +1,8 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models
 
-enum class Currency {
+enum class Currencies {
     GOLD,
-    DOUBLOONS
+    DOUBLOONS,
+    ANCIENT_COINS,
+    EMISSARY_VALUE
 }
