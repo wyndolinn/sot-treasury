@@ -1,8 +1,8 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models
 
-data class Treasure(
+data class Faction(
     val id: Int,
     val name: String,
-    val factions: List<Int>,
-    val currencies: List<TreasurePrice>
+    val icon: String,
+    val categories: List<Category>
 )

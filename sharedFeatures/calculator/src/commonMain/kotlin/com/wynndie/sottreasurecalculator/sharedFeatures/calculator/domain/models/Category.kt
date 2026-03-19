@@ -2,6 +2,6 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.model
 
 data class Category(
     val id: Int,
-    val title: String,
+    val name: String,
     val subcategories: List<Subcategory>
 )

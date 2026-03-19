@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,15 +24,14 @@ import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.thro
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Category
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components.TreasureTile
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.models.TreasureKey
 
 @Composable
 fun TreasureCategory(
     category: Category,
     selectedSubcategory: Int,
-    treasureAmounts: Map<TreasureKey, Int>,
+    treasureAmounts: Map<Int, Int>,
     onClickSubcategory: (Int) -> Unit,
-    onChangeAmount: (TreasureKey, Int) -> Unit,
+    onChangeAmount: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -39,16 +39,17 @@ fun TreasureCategory(
         modifier = modifier
     ) {
         Text(
-            text = category.title,
+            text = category.name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight(600)
         )
 
-        LazyRow(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(category.subcategories) { subcategory ->
+            category.subcategories.forEach { subcategory ->
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -67,7 +68,7 @@ fun TreasureCategory(
                         .padding(MaterialTheme.spacing.small)
                 ) {
                     Text(
-                        text = subcategory.title,
+                        text = subcategory.name,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.secondary,
                         fontWeight = FontWeight(600)
@@ -82,23 +83,13 @@ fun TreasureCategory(
             ) {
                 category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
                     subcategory.items.forEach { item ->
-                        val treasureKey = TreasureKey(
-                            category = category.id,
-                            subcategory = subcategory.id,
-                            treasure = item.id
-                        )
+                        val amount = treasureAmounts[item.id] ?: 0
                         TreasureTile(
-                            title = item.title,
+                            title = item.name,
                             currencies = item.currencies,
-                            amount = treasureAmounts[treasureKey] ?: 0,
-                            onClickIncrement = {
-                                val amount = treasureAmounts[treasureKey] ?: 0
-                                onChangeAmount(treasureKey, amount + 1)
-                            },
-                            onClickDecrement = {
-                                val amount = treasureAmounts[treasureKey] ?: 0
-                                onChangeAmount(treasureKey, amount - 1)
-                            },
+                            amount = amount,
+                            onClickIncrement = { onChangeAmount(item.id, amount + 1) },
+                            onClickDecrement = { onChangeAmount(item.id, amount - 1) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

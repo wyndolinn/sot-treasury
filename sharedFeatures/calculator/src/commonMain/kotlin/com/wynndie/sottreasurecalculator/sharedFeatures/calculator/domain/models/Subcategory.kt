@@ -2,6 +2,7 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.model
 
 data class Subcategory(
     val id: Int,
-    val title: String,
+    val name: String,
+    val icon: String,
     val items: List<Treasure>
 )
