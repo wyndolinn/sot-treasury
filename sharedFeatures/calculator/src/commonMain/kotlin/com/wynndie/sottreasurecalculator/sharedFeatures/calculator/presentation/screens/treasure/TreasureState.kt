@@ -8,5 +8,7 @@ data class TreasureState(
     val treasure: List<Faction> = emptyList(),
     val selectedFactionPage: Int = 0,
     val selectedSubcategories: Map<Int, Map<Int, Int>> = mapOf(),
-    val treasureAmounts: Map<Int, Int> = mapOf()
+    val treasureAmounts: Map<Int, Int> = mapOf(),
+    val valuePerFaction: Map<Int, Map<Int, Pair<Int, Int>>> = mapOf(),
+    val totalValues: Map<Int, Pair<Int, Int>> = mapOf()
 )

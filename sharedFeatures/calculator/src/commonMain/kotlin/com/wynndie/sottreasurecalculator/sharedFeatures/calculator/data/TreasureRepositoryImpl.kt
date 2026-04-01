@@ -5,53 +5,117 @@ import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.Outcome
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.CategoryDto
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.CurrencyDto
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.FactionDto
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.FactionDto.Companion.toDomain
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.SubcategoryDto
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.TreasureDto
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.TreasureDto.Companion.toDomain
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.ValueDto
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Faction
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.repositories.TreasureRepository
-import kotlin.random.Random
 
 class TreasureRepositoryImpl : TreasureRepository {
     override suspend fun loadTreasure(): Outcome<List<Faction>, DataError.Remote> {
-        return Outcome.Success(buildDummyFactions())
+        val dummyTreasure = buildDummyTreasure()
+        return Outcome.Success(dummyTreasure)
     }
 
 
-    private fun buildDummyFactions(): List<Faction> {
-        val rng = Random(seed = 67)
+    private fun buildDummyTreasure(): List<Faction> {
+        val factionsDto = listOf(
+            FactionDto(0, "Gold Hoarders", ""),
+            FactionDto(1, "Order of Souls", ""),
+            FactionDto(2, "Merchant Alliance", ""),
+            FactionDto(3, "Reaper's Bones", "")
+        )
 
-        val factionsDto = (0..5).map {
-            FactionDto(it, "Faction $it", "")
-        }
-        val categoriesDto = (0..20).map {
-            CategoryDto(it, "Category $it")
-        }
-        val subcategoriesDto = (0..10).map {
-            SubcategoryDto(it, "Subcategory $it", "")
-        }
-        val currenciesDto = (0..2).map {
-            CurrencyDto(it, "Currency$it", "")
-        }
-        val treasureDto = (0..300).map { id ->
+        val categoriesDto = listOf(
+            CategoryDto(0, "Shared Treasure", ""),
+            CategoryDto(1, "Common Treasure", "")
+        )
+
+        val subcategoriesDto = listOf(
+            SubcategoryDto(0, "Common", ""),
+            SubcategoryDto(1, "Ashen", ""),
+            SubcategoryDto(2, "Coral", "")
+        )
+
+        val currenciesDto = listOf(
+            CurrencyDto(0, "Gold", ""),
+            CurrencyDto(1, "Doubloons", ""),
+            CurrencyDto(2, "EmissaryValue", "")
+        )
+
+        val treasureDto = listOf(
             TreasureDto(
-                id = id,
-                name = "Treasure $id",
-                factions = (0..rng.nextInt(0, 2)).map { factionsDto.random(rng).id },
-                category = categoriesDto.random(rng).id,
-                subcategory = subcategoriesDto.random(rng).id,
-                currency = currenciesDto.random(rng).id,
-                minPrice = rng.nextInt(200, 700),
-                maxPrice = rng.nextInt(900, 1500)
+                id = 0,
+                name = "Ruby gem",
+                factions = listOf(0, 1, 2, 3),
+                category = 0,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(1, 30, 30),
+                    ValueDto(2, 5000, 5000)
+                )
+            ),
+            TreasureDto(
+                id = 1,
+                name = "Emerald gem",
+                factions = listOf(0, 1, 3),
+                category = 0,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(1, 20, 20),
+                    ValueDto(2, 5000, 5000)
+                )
+            ),
+            TreasureDto(
+                id = 2,
+                name = "Sapphire gem",
+                factions = listOf(1, 2, 3),
+                category = 0,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(1, 10, 10),
+                    ValueDto(2, 5000, 5000)
+                )
+            ),
+            TreasureDto(
+                id = 3,
+                name = "Captain's chest",
+                factions = listOf(0, 3),
+                category = 1,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(0, 1000, 1200),
+                    ValueDto(2, 5000, 5000)
+                )
+            ),
+            TreasureDto(
+                id = 4,
+                name = "Villainous skull",
+                factions = listOf(1, 3),
+                category = 1,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(0, 1100, 1300),
+                    ValueDto(2, 5000, 5000)
+                )
+            ),
+            TreasureDto(
+                id = 5,
+                name = "Crate of Silks",
+                factions = listOf(2, 3),
+                category = 1,
+                subcategory = 0,
+                values = listOf(
+                    ValueDto(0, 1200, 1400),
+                    ValueDto(2, 5000, 5000)
+                )
             )
-        }
+        )
 
         val tree = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>()
-
         treasureDto.forEach { dto ->
-            val treasure = dto.toDomain()
+            val treasure = dto.toDomain(currenciesDto)
             dto.factions.forEach { factionId ->
                 tree
                     .getOrPut(factionId) { mutableMapOf() }

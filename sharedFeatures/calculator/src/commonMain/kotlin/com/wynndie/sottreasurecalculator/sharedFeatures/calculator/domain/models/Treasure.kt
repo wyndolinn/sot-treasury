@@ -4,5 +4,5 @@ data class Treasure(
     val id: Int,
     val name: String,
     val factions: List<Int>,
-    val currencies: List<TreasurePrice>
+    val values: List<TreasureValue>
 )

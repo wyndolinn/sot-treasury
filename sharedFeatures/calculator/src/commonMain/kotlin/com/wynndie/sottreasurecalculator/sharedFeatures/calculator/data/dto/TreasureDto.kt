@@ -1,8 +1,6 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto
 
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Currencies
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasurePrice
 
 data class TreasureDto(
     val id: Int,
@@ -10,16 +8,12 @@ data class TreasureDto(
     val factions: List<Int>,
     val category: Int,
     val subcategory: Int,
-    val currency: Int,
-    val minPrice: Int,
-    val maxPrice: Int
+    val values: List<ValueDto>
 ) {
-    companion object {
-        fun TreasureDto.toDomain() = Treasure(
-            id = id,
-            name = name,
-            factions = factions,
-            currencies = listOf(TreasurePrice(Currencies.GOLD, minPrice, maxPrice))
-        )
-    }
+    fun toDomain(currencies: List<CurrencyDto>) = Treasure(
+        id = id,
+        name = name,
+        factions = factions,
+        values = values.map { it.toDomain(currencies) }
+    )
 }

@@ -21,8 +21,7 @@ import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.thro
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Currencies
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasurePrice
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasureValue
 import com.wynndie.sottreasurecalculator.sharedResources.Res
 import com.wynndie.sottreasurecalculator.sharedResources.ic_add
 import com.wynndie.sottreasurecalculator.sharedResources.ic_gold
@@ -32,7 +31,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun TreasureTile(
     title: String,
-    currencies: List<TreasurePrice>,
+    currencies: List<TreasureValue>,
     amount: Int,
     onClickIncrement: () -> Unit,
     onClickDecrement: () -> Unit,
@@ -57,7 +56,8 @@ fun TreasureTile(
             ) {
                 currencies.forEach { currency ->
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall)
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
                             painter = painterResource(Res.drawable.ic_gold),
@@ -123,7 +123,9 @@ private fun TreasureTilePreview() {
     AppTheme {
         TreasureTile(
             title = "Captain's Chest",
-            currencies = listOf(TreasurePrice(Currencies.GOLD, 560, 1200)),
+            currencies = listOf(
+                TreasureValue(0, "Gold", "", 600, 800)
+            ),
             amount = 3,
             onClickIncrement = { },
             onClickDecrement = { },

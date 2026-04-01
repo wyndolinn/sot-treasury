@@ -5,13 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.onSuccess
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.repositories.TreasureRepository
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.usecases.ChangeTreasureAmountUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TreasureViewModel(
-    private val treasureRepository: TreasureRepository
+    private val treasureRepository: TreasureRepository,
+    private val changeTreasureAmountUseCase: ChangeTreasureAmountUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TreasureState())
@@ -29,7 +31,7 @@ class TreasureViewModel(
                 onClickSubcategory(action.factionId, action.categoryId, action.subcategoryId)
 
             is TreasureAction.OnChangeTreasureCount ->
-                onChangeTreasureCount(action.treasureId, action.amount)
+                onChangeTreasureAmount(action.treasureId, action.amount)
 
             is TreasureAction.OnChangeFactionPage ->
                 onChangeFactionPage(action.id)
@@ -49,12 +51,31 @@ class TreasureViewModel(
         }
     }
 
-    private fun onChangeTreasureCount(treasureId: Int, amount: Int) {
+    private fun onChangeTreasureAmount(id: Int, amount: Int) {
         _state.update { state ->
+            val valuePerFaction = changeTreasureAmountUseCase(
+                id = id,
+                oldAmount = state.treasureAmounts[id] ?: 0,
+                newAmount = amount,
+                allTreasure = state.treasure
+                    .flatMap { it.categories }
+                    .flatMap { it.subcategories }
+                    .flatMap { it.treasure }
+                    .associateBy { it.id },
+                valuePerFaction = state.valuePerFaction
+            )
+
             state.copy(
-                treasureAmounts = state.treasureAmounts.toMutableMap().apply {
-                    put(treasureId, amount)
-                }
+                treasureAmounts = state.treasureAmounts.toMutableMap().apply { put(id, amount) },
+                valuePerFaction = valuePerFaction,
+                totalValues = valuePerFaction.values
+                    .flatMap { currencyMap -> currencyMap.entries }
+                    .groupBy { it.key }
+                    .mapValues { (_, entries) ->
+                        val totalMin = entries.sumOf { it.value.first }
+                        val totalMax = entries.sumOf { it.value.second }
+                        totalMin to totalMax
+                    }
             )
         }
     }

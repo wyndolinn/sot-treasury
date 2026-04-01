@@ -4,5 +4,5 @@ data class Subcategory(
     val id: Int,
     val name: String,
     val icon: String,
-    val items: List<Treasure>
+    val treasure: List<Treasure>
 )

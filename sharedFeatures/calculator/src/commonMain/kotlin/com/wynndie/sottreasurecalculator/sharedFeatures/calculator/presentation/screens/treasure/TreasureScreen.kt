@@ -2,9 +2,11 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -30,12 +34,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasureValue
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components.TreasureCategory
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.OnChangeFactionPage
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.OnChangeTreasureCount
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.OnClickSubcategory
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.components.TreasureCategory
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TreasureScreenRoot(
     viewModel: TreasureViewModel,
@@ -44,27 +49,43 @@ fun TreasureScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Crossfade(targetState = state.loadingState) { loadingState ->
-        when (loadingState) {
-            LoadingState.Loading -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = modifier.fillMaxSize()
-                ) {
-                    LoadingIndicator()
+    BottomSheetScaffold(
+        sheetContent = {
+            TreasureSheetContent(
+                totalValues = state.totalValues,
+                currencies = state.treasure
+                    .asSequence()
+                    .flatMap { it.categories }
+                    .flatMap { it.subcategories }
+                    .flatMap { it.treasure }
+                    .flatMap { it.values }
+                    .distinctBy { it.id }
+                    .toList()
+            )
+        }
+    ) { innerPadding ->
+        Crossfade(targetState = state.loadingState) { loadingState ->
+            when (loadingState) {
+                LoadingState.Loading -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        LoadingIndicator()
+                    }
                 }
-            }
 
-            is LoadingState.Failed -> {
+                is LoadingState.Failed -> {
 
-            }
+                }
 
-            LoadingState.Finished -> {
-                TreasureScreen(
-                    state = state,
-                    onAction = viewModel::onAction,
-                    modifier = modifier.fillMaxSize()
-                )
+                LoadingState.Finished -> {
+                    TreasureScreen(
+                        state = state,
+                        onAction = viewModel::onAction,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
@@ -78,7 +99,6 @@ private fun TreasureScreen(
 ) {
 
     val pagerState = rememberPagerState { state.treasure.size }
-
     LaunchedEffect(state.selectedFactionPage) {
         pagerState.animateScrollToPage(state.selectedFactionPage)
     }
@@ -86,13 +106,13 @@ private fun TreasureScreen(
         onAction(OnChangeFactionPage(pagerState.targetPage))
     }
 
-
     Column(
         modifier = modifier
     ) {
         PrimaryScrollableTabRow(
             selectedTabIndex = state.selectedFactionPage,
-            edgePadding = 0.dp
+            edgePadding = 0.dp,
+            modifier = Modifier.fillMaxWidth()
         ) {
             state.treasure.forEachIndexed { index, faction ->
                 val selected = index == state.selectedFactionPage
@@ -149,6 +169,65 @@ private fun TreasureScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TreasureSheetContent(
+    totalValues: Map<Int, Pair<Int, Int>>,
+    currencies: List<TreasureValue>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(MaterialTheme.spacing.medium)
+    ) {
+        Text(
+            text = "Total",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        currencies.forEach { currency ->
+            val (min, max) = totalValues[currency.id] ?: (0 to 0)
+            TreasureCurrencyRow(
+                currency = currency,
+                min = min,
+                max = max
+            )
+        }
+    }
+}
+
+@Composable
+private fun TreasureCurrencyRow(
+    currency: TreasureValue,
+    min: Int,
+    max: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = currency.name,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        Text(
+            text = if (min == max) "$min" else "$min – $max",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 

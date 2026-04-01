@@ -8,12 +8,10 @@ data class SubcategoryDto(
     val name: String,
     val icon: String
 ) {
-    companion object {
-        fun SubcategoryDto.toDomain(treasures: List<Treasure>) = Subcategory(
-            id = id,
-            name = name,
-            icon = icon,
-            items = treasures
-        )
-    }
+    fun toDomain(treasures: List<Treasure>) = Subcategory(
+        id = id,
+        name = name,
+        icon = icon,
+        treasure = treasures
+    )
 }

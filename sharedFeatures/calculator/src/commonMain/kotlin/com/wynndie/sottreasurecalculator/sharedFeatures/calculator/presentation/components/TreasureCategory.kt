@@ -1,4 +1,4 @@
-package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.components
+package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +21,6 @@ import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.then
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.throttleClick
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Category
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components.TreasureTile
 
 @Composable
 fun TreasureCategory(
@@ -82,11 +79,11 @@ fun TreasureCategory(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
-                    subcategory.items.forEach { item ->
+                    subcategory.treasure.forEach { item ->
                         val amount = treasureAmounts[item.id] ?: 0
                         TreasureTile(
                             title = item.name,
-                            currencies = item.currencies,
+                            currencies = item.values,
                             amount = amount,
                             onClickIncrement = { onChangeAmount(item.id, amount + 1) },
                             onClickDecrement = { onChangeAmount(item.id, amount - 1) },
