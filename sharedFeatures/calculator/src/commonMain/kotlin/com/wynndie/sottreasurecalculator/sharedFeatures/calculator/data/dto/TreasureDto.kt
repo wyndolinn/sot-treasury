@@ -6,6 +6,7 @@ data class TreasureDto(
     val id: Int,
     val name: String,
     val factions: List<Int>,
+    val sellableTo: List<Int>,
     val category: Int,
     val subcategory: Int,
     val values: List<ValueDto>
@@ -13,7 +14,7 @@ data class TreasureDto(
     fun toDomain(currencies: List<CurrencyDto>) = Treasure(
         id = id,
         name = name,
-        factions = factions,
+        sellableTo = sellableTo,
         values = values.map { it.toDomain(currencies) }
     )
 }

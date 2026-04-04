@@ -2,13 +2,18 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation
 
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Faction
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Emissary
 
 data class TreasureState(
     val loadingState: LoadingState = LoadingState.Finished,
-    val treasure: List<Faction> = emptyList(),
+    val factions: List<Faction> = emptyList(),
     val selectedFactionPage: Int = 0,
     val selectedSubcategories: Map<Int, Map<Int, Int>> = mapOf(),
     val treasureAmounts: Map<Int, Int> = mapOf(),
-    val valuePerFaction: Map<Int, Map<Int, Pair<Int, Int>>> = mapOf(),
-    val totalValues: Map<Int, Pair<Int, Int>> = mapOf()
+    val valuePerEmissary: Map<Int, Map<Int, Pair<Int, Int>>> = mapOf(),
+    val emissaries: List<Emissary> = emptyList(),
+    val isEmissaryPickerOpen: Boolean = false,
+    val selectedEmissary: Int = 0,
+    val emissaryGrade: Int = 0,
+    val emissaryMultiplier: Float = 1f
 )

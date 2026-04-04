@@ -5,7 +5,7 @@
     <!--  REMOTE DATA ERRORS  -->
     <string name="error_bad_request">Invalid request. Please check your input and try again.</string>
     <string name="error_unauthorized">You are not logged in. Please sign in to continue.</string>
-    <string name="error_forbidden">You don\'t have permission to perform this action.</string>
+    <string name="error_forbidden">You don't have permission to perform this action.</string>
     <string name="error_not_found">The requested resource could not be found.</string>
     <string name="error_request_timeout">The request timed out. Please try again.</string>
     <string name="error_too_many_requests">Too many requests. Please wait a moment and try again.</string>

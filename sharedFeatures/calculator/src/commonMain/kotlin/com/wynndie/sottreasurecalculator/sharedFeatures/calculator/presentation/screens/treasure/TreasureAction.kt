@@ -1,16 +1,21 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure
 
 sealed interface TreasureAction {
-    data class OnClickSubcategory(
+
+    data object ReloadData : TreasureAction
+    data class SelectFactionPage(val id: Int) : TreasureAction
+    data class SelectEmissaryGrade(val level: Int) : TreasureAction
+    data class ToggleEmissaryPicker(val open: Boolean) : TreasureAction
+    data class SelectEmissary(val id: Int) : TreasureAction
+
+    data class SelectSubcategory(
         val factionId: Int,
         val categoryId: Int,
         val subcategoryId: Int
     ) : TreasureAction
 
-    data class OnChangeTreasureCount(
+    data class ChangeTreasureAmount(
         val treasureId: Int,
         val amount: Int
     ) : TreasureAction
-
-    data class OnChangeFactionPage(val id: Int) : TreasureAction
 }
