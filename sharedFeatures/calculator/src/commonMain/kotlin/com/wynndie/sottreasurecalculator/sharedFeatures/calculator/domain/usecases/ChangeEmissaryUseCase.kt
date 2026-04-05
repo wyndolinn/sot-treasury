@@ -19,10 +19,10 @@ class ChangeEmissaryUseCase {
             val valuesMap = valuePerEmissary[targetEmissary].orEmpty().toMutableMap()
 
             treasure.values.forEach { value ->
-                val current = valuesMap[value.id] ?: Pair(0, 0)
-                valuesMap[value.id] = Pair(
-                    current.first + value.minPrice * amount,
-                    current.second + value.maxPrice * amount
+                val current = valuesMap[value.currencyId] ?: Pair(0, 0)
+                valuesMap[value.currencyId] = Pair(
+                    current.first + (value.minPrice ?: 0) * amount,
+                    current.second + (value.maxPrice ?: 0) * amount
                 )
             }
 

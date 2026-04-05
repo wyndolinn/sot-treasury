@@ -7,7 +7,7 @@ class ChangeTreasureAmountUseCase {
         treasureId: Int,
         oldAmount: Int,
         newAmount: Int,
-        allTreasure: Map<Int,  Treasure>,
+        allTreasure: Map<Int, Treasure>,
         valuePerEmissary: Map<Int, Map<Int, Pair<Int, Int>>>
     ): Map<Int, Map<Int, Pair<Int, Int>>> {
 
@@ -19,10 +19,10 @@ class ChangeTreasureAmountUseCase {
         val amountDifference = newAmount - oldAmount
 
         treasure.values.forEach { value ->
-            val current = valuesMap[value.id] ?: Pair(0, 0)
-            valuesMap[value.id] = Pair(
-                current.first + value.minPrice * amountDifference,
-                current.second + value.maxPrice * amountDifference
+            val current = valuesMap[value.currencyId] ?: Pair(0, 0)
+            valuesMap[value.currencyId] = Pair(
+                current.first + (value.minPrice ?: 0) * amountDifference,
+                current.second + (value.maxPrice ?: 0) * amountDifference
             )
         }
 

@@ -55,7 +55,7 @@ fun TreasureScreenRoot(
             .flatMap { it.subcategories }
             .flatMap { it.treasure }
             .flatMap { it.values }
-            .distinctBy { it.id }
+            .distinctBy { it.currencyId }
             .toList()
     }
 
@@ -87,7 +87,7 @@ fun TreasureScreenRoot(
             TreasureSheetContent(
                 values = currencies,
                 totalValues = totalValues,
-                factions = state.emissaries,
+                emissaries = state.emissaries,
                 isEmissaryPickerOpen = state.isEmissaryPickerOpen,
                 selectedEmissary = state.selectedEmissary,
                 selectedEmissaryLevel = state.emissaryGrade,

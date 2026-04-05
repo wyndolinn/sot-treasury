@@ -14,4 +14,14 @@ data class SubcategoryDto(
         icon = icon,
         treasure = treasures
     )
+
+    companion object {
+        fun from(response: List<String>): SubcategoryDto {
+            return SubcategoryDto(
+                id = response[0].toInt(),
+                name = response[1],
+                icon = response.getOrNull(2) ?: ""
+            )
+        }
+    }
 }

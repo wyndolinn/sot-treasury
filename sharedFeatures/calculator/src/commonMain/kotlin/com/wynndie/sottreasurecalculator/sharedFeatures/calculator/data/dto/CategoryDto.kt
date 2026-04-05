@@ -24,4 +24,14 @@ data class CategoryDto(
             }
         )
     }
+
+    companion object {
+        fun from(response: List<String>): CategoryDto {
+            return CategoryDto(
+                id = response[0].toInt(),
+                name = response[1],
+                icon = response.getOrNull(2) ?: ""
+            )
+        }
+    }
 }

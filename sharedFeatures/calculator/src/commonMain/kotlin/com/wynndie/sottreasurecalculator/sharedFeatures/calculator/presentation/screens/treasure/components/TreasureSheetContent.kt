@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 fun TreasureSheetContent(
     values: List<TreasureValue>,
     totalValues: Map<Int, Pair<Int, Int>>,
-    factions: List<Emissary>,
+    emissaries: List<Emissary>,
     isEmissaryPickerOpen: Boolean,
     selectedEmissary: Int,
     selectedEmissaryLevel: Int,
@@ -55,7 +55,7 @@ fun TreasureSheetContent(
                 .fillMaxWidth()
         ) {
             values.forEach { currency ->
-                val (min, max) = totalValues[currency.id] ?: (0 to 0)
+                val (min, max) = totalValues[currency.currencyId] ?: (0 to 0)
                 TreasureCurrencyRow(
                     currency = currency,
                     min = min,
@@ -64,50 +64,52 @@ fun TreasureSheetContent(
             }
         }
 
-        Row {
-            Box(
-                modifier = Modifier
-                    .size(MaterialTheme.sizing.large)
-                    .clip(RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp))
-                    .background(factions[selectedEmissary].color)
-                    .clickable { onToggleEmissaryPicker(true) }
-            )
+        emissaries.getOrNull(selectedEmissary)?.let { emissary ->
+            Row {
+                Box(
+                    modifier = Modifier
+                        .size(MaterialTheme.sizing.large)
+                        .clip(RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp))
+                        .background(emissary.color)
+                        .clickable { onToggleEmissaryPicker(true) }
+                )
 
-            DropdownMenu(
-                expanded = isEmissaryPickerOpen,
-                onDismissRequest = { onToggleEmissaryPicker(false) }
-            ) {
-                factions.forEachIndexed { index, faction ->
-                    DropdownMenuItem(
-                        text = { Text(faction.name) },
-                        onClick = { onSelectEmissary(index) }
-                    )
+                DropdownMenu(
+                    expanded = isEmissaryPickerOpen,
+                    onDismissRequest = { onToggleEmissaryPicker(false) }
+                ) {
+                    emissaries.forEachIndexed { index, faction ->
+                        DropdownMenuItem(
+                            text = { Text(faction.name) },
+                            onClick = { onSelectEmissary(index) }
+                        )
+                    }
                 }
-            }
 
-            val interactionSource = remember { MutableInteractionSource() }
-            Slider(
-                value = selectedEmissaryLevel.toFloat(),
-                onValueChange = { onSelectEmissaryGrade(it.roundToInt()) },
-                valueRange = 0f..factions[selectedEmissary].grades.lastIndex.toFloat(),
-                steps = factions[selectedEmissary].grades.size - 2,
-                enabled = selectedEmissary != 0,
-                colors = SliderDefaults.colors(
-                    thumbColor = factions[selectedEmissary].color,
-                    activeTrackColor = factions[selectedEmissary].color,
-                    inactiveTrackColor = MaterialTheme.colorScheme.surface,
-                    inactiveTickColor = MaterialTheme.colorScheme.inverseSurface,
-                    activeTickColor = MaterialTheme.colorScheme.inverseSurface,
-                ),
-                interactionSource = interactionSource,
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceDim,
-                        shape = RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
-                    )
-                    .padding(horizontal = MaterialTheme.spacing.medium)
-                    .weight(1f)
-            )
+                val interactionSource = remember { MutableInteractionSource() }
+                Slider(
+                    value = selectedEmissaryLevel.toFloat(),
+                    onValueChange = { onSelectEmissaryGrade(it.roundToInt()) },
+                    valueRange = 0f..emissary.grades.lastIndex.toFloat(),
+                    steps = emissaries[selectedEmissary].grades.size - 2,
+                    enabled = selectedEmissary != 0,
+                    colors = SliderDefaults.colors(
+                        thumbColor = emissaries[selectedEmissary].color,
+                        activeTrackColor = emissaries[selectedEmissary].color,
+                        inactiveTrackColor = MaterialTheme.colorScheme.surface,
+                        inactiveTickColor = MaterialTheme.colorScheme.inverseSurface,
+                        activeTickColor = MaterialTheme.colorScheme.inverseSurface,
+                    ),
+                    interactionSource = interactionSource,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceDim,
+                            shape = RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
+                        )
+                        .padding(horizontal = MaterialTheme.spacing.medium)
+                        .weight(1f)
+                )
+            }
         }
     }
 }

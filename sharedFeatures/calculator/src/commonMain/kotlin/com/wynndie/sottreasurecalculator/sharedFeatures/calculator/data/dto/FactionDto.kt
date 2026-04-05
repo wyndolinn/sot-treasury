@@ -2,6 +2,7 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto
 
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Faction
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
+import kotlinx.serialization.Serializable
 
 data class FactionDto(
     val id: Int,
@@ -24,5 +25,15 @@ data class FactionDto(
                     ?: return@mapNotNull null
             }
         )
+    }
+
+    companion object {
+        fun from(response: List<String>): FactionDto {
+            return FactionDto(
+                id = response[0].toInt(),
+                name = response[1],
+                icon = response.getOrNull(2) ?: ""
+            )
+        }
     }
 }

@@ -71,6 +71,16 @@ class TreasureViewModel(
                 .flatMap { it.treasure }
                 .associateBy { it.id }
 
+            treasure.forEach { faction ->
+                faction.categories.forEach { category ->
+                    category.subcategories.forEach { subcategory ->
+                        subcategory.treasure.forEach { treasure ->
+                            println("PRINTLINE: $treasure")
+                        }
+                    }
+                }
+            }
+
             allEmissaries = emissaries
                 .associateBy { it.id }
 
