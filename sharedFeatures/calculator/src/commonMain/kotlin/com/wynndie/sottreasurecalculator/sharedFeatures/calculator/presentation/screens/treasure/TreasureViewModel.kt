@@ -12,6 +12,9 @@ import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.usecas
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.usecases.ChangeTreasureAmountUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,13 +32,19 @@ class TreasureViewModel(
 
 
     init {
-        loadData()
+        viewModelScope.launch {
+            val treasure = treasureRepository.getTreasure().first()
+            val emissaries = treasureRepository.getEmissaries().first()
+            if (treasure.isEmpty() || emissaries.isEmpty()) syncData()
+        }
+
+        collectData()
     }
 
 
     fun onAction(action: TreasureAction) {
         when (action) {
-            TreasureAction.ReloadData -> loadData()
+            TreasureAction.ReloadData -> syncData()
             is TreasureAction.SelectEmissary -> selectEmissary(action.id)
             is TreasureAction.SelectFactionPage -> selectFactionPage(action.id)
             is TreasureAction.ToggleEmissaryPicker -> toggleEmissaryPicker(action.open)
@@ -52,44 +61,39 @@ class TreasureViewModel(
     }
 
 
-    private fun loadData() {
-        viewModelScope.launch {
-            _state.update { it.copy(loadingState = LoadingState.Loading) }
+    private fun collectData() {
+        combine(
+            treasureRepository.getTreasure(),
+            treasureRepository.getEmissaries()
+        ) { treasure, emissaries ->
 
-            val treasure = treasureRepository.loadTreasure().getOrElse { error ->
-                _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
-                return@launch
-            }
-            val emissaries = treasureRepository.loadEmissaries().getOrElse { error ->
-                _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
-                return@launch
-            }
-
+            allEmissaries = emissaries.associateBy { it.id }
             allTreasure = treasure
                 .flatMap { it.categories }
                 .flatMap { it.subcategories }
                 .flatMap { it.treasure }
                 .associateBy { it.id }
 
-            treasure.forEach { faction ->
-                faction.categories.forEach { category ->
-                    category.subcategories.forEach { subcategory ->
-                        subcategory.treasure.forEach { treasure ->
-                            println("PRINTLINE: $treasure")
-                        }
-                    }
-                }
-            }
-
-            allEmissaries = emissaries
-                .associateBy { it.id }
-
-
             _state.update {
                 it.copy(
                     factions = treasure,
                     emissaries = emissaries
                 )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun syncData() {
+        viewModelScope.launch {
+            _state.update { it.copy(loadingState = LoadingState.Loading) }
+
+            treasureRepository.syncTreasure().getOrElse { error ->
+                _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
+                return@launch
+            }
+            treasureRepository.syncEmissaries().getOrElse { error ->
+                _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
+                return@launch
             }
 
             _state.update { it.copy(loadingState = LoadingState.Finished) }
@@ -139,7 +143,8 @@ class TreasureViewModel(
             state.copy(
                 selectedEmissary = id,
                 valuePerEmissary = valuePerEmissary,
-                emissaryMultiplier = emissaryMultiplier
+                emissaryMultiplier = emissaryMultiplier,
+                isEmissaryPickerOpen = false
             )
         }
     }

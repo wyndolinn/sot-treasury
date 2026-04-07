@@ -1,23 +1,26 @@
-package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto
+package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.local.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Category
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
 
-data class CategoryDto(
-    val id: Int,
+@Entity
+data class CategoryEntity(
+    @PrimaryKey val id: Int,
     val name: String,
     val icon: String
 ) {
     fun toDomain(
         subcategoriesTree: Map<Int, List<Treasure>>,
-        subcategoriesDto: List<SubcategoryDto>
+        subcategories: List<SubcategoryEntity>
     ): Category {
         return Category(
             id = id,
             name = name,
             icon = icon,
             subcategories = subcategoriesTree.mapNotNull { (subcategoryId, treasures) ->
-                subcategoriesDto
+                subcategories
                     .find { it.id == subcategoryId }
                     ?.toDomain(treasures)
                     ?: return@mapNotNull null
@@ -26,8 +29,8 @@ data class CategoryDto(
     }
 
     companion object {
-        fun from(response: List<String>): CategoryDto {
-            return CategoryDto(
+        fun from(response: List<String>): CategoryEntity {
+            return CategoryEntity(
                 id = response[0].toInt(),
                 name = response[1],
                 icon = response.getOrNull(2) ?: ""

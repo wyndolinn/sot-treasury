@@ -93,7 +93,8 @@ fun TreasureScreenRoot(
                 selectedEmissaryLevel = state.emissaryGrade,
                 onToggleEmissaryPicker = { viewModel.onAction(TreasureAction.ToggleEmissaryPicker(it)) },
                 onSelectEmissary = { viewModel.onAction(TreasureAction.SelectEmissary(it)) },
-                onSelectEmissaryGrade = { viewModel.onAction(TreasureAction.SelectEmissaryGrade(it)) }
+                onSelectEmissaryGrade = { viewModel.onAction(TreasureAction.SelectEmissaryGrade(it)) },
+                onReloadData = { viewModel.onAction(TreasureAction.ReloadData) }
             )
         }
     ) { innerPadding ->
@@ -146,24 +147,26 @@ private fun TreasureScreen(
     Column(
         modifier = modifier
     ) {
-        PrimaryScrollableTabRow(
-            selectedTabIndex = state.selectedFactionPage,
-            edgePadding = 0.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            state.factions.forEachIndexed { index, faction ->
-                val selected = index == state.selectedFactionPage
-                Tab(
-                    selected = selected,
-                    onClick = { onAction(SelectFactionPage(index)) },
-                    text = {
-                        Text(
-                            text = faction.name,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight(if (selected) 600 else 400),
-                        )
-                    }
-                )
+        if (state.factions.isNotEmpty()) {
+            PrimaryScrollableTabRow(
+                selectedTabIndex = state.selectedFactionPage,
+                edgePadding = 0.dp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                state.factions.forEachIndexed { index, faction ->
+                    val selected = index == state.selectedFactionPage
+                    Tab(
+                        selected = selected,
+                        onClick = { onAction(SelectFactionPage(index)) },
+                        text = {
+                            Text(
+                                text = faction.name,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight(if (selected) 600 else 400),
+                            )
+                        }
+                    )
+                }
             }
         }
 

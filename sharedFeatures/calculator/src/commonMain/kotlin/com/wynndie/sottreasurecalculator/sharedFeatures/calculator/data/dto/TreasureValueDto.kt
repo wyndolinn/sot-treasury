@@ -1,6 +1,6 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto
 
-import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasureValue
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.local.entities.TreasureValueEntity
 
 data class TreasureValueDto(
     val treasureId: Int,
@@ -8,15 +8,18 @@ data class TreasureValueDto(
     val minValue: Int?,
     val maxValue: Int?
 ) {
-    fun toDomain(currencies: Map<Int, CurrencyDto>): TreasureValue? {
-        if (currencyId == null) return null
-        val currency = currencies[currencyId]
-        return TreasureValue(
-            currencyId = currencyId,
-            name = currency?.name ?: "",
-            icon = currency?.icon ?: "",
-            minPrice = minValue,
-            maxPrice = maxValue
+    fun toEntity(
+        treasureId: Int,
+        currencies: Map<Int, CurrencyDto>
+    ): TreasureValueEntity? {
+        val currency = currencies[currencyId] ?: return null
+        return TreasureValueEntity(
+            treasureId = treasureId,
+            currencyId = currencyId ?: return null,
+            name = currency.name,
+            icon = currency.icon,
+            minPrice = minValue ?: maxValue ?: return null,
+            maxPrice = maxValue ?: minValue ?: return null
         )
     }
 

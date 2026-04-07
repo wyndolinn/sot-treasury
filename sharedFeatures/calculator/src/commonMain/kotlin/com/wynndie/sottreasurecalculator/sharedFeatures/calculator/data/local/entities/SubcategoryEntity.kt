@@ -1,10 +1,13 @@
-package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto
+package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.local.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Subcategory
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
 
-data class SubcategoryDto(
-    val id: Int,
+@Entity
+data class SubcategoryEntity(
+    @PrimaryKey val id: Int,
     val name: String,
     val icon: String
 ) {
@@ -16,8 +19,8 @@ data class SubcategoryDto(
     )
 
     companion object {
-        fun from(response: List<String>): SubcategoryDto {
-            return SubcategoryDto(
+        fun from(response: List<String>): SubcategoryEntity {
+            return SubcategoryEntity(
                 id = response[0].toInt(),
                 name = response[1],
                 icon = response.getOrNull(2) ?: ""

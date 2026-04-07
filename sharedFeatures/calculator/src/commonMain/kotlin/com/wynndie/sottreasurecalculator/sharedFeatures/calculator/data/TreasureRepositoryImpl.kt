@@ -2,10 +2,12 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data
 
 import com.wynndie.sottreasurecalculator.sharedCore.data.remote.safeCall
 import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.DataError
+import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.EmptyOutcome
 import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.Outcome
 import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.getOrElse
 import com.wynndie.sottreasurecalculator.sharedCore.domain.outcome.map
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.dto.ResponseDto
+import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.data.local.dao.TreasureDao
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Emissary
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Faction
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Treasure
@@ -16,11 +18,15 @@ import io.ktor.client.request.parameter
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class TreasureRepositoryImpl(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val treasureDao: TreasureDao
 ) : TreasureRepository {
-    override suspend fun loadTreasure(): Outcome<List<Faction>, DataError.Remote> {
+    override suspend fun syncTreasure(): EmptyOutcome<DataError.Remote> {
 
         val deferredResults = coroutineScope {
             listOf(
@@ -70,66 +76,96 @@ class TreasureRepositoryImpl(
         }.awaitAll()
 
 
-        val treasureDtoList = deferredResults[0]
-            .map { it.toTreasureDtoList() }
+        val treasureEntities = deferredResults[0]
+            .map { it.toTreasureEntityList() }
             .getOrElse { return Outcome.Error(it) }
-        val treasureValueDtoList = deferredResults[1]
+        val factionEntities = deferredResults[2]
+            .map { it.toFactionEntities() }
+            .getOrElse { return Outcome.Error(it) }
+        val categoryEntities = deferredResults[3]
+            .map { it.toCategoryEntities() }
+            .getOrElse { return Outcome.Error(it) }
+        val subcategoryEntities = deferredResults[4]
+            .map { it.toSubcategoryEntities() }
+            .getOrElse { return Outcome.Error(it) }
+
+        treasureDao.insertTreasure(treasureEntities)
+        treasureDao.insertFactions(factionEntities)
+        treasureDao.insertCategories(categoryEntities)
+        treasureDao.insertSubcategories(subcategoryEntities)
+
+
+        val valuesByTreasureId = deferredResults[1]
             .map { it.toTreasureValueDtoList() }
             .getOrElse { return Outcome.Error(it) }
-        val factionDtoList = deferredResults[2]
-            .map { it.toFactionDtoList() }
-            .getOrElse { return Outcome.Error(it) }
-        val categoryDtoList = deferredResults[3]
-            .map { it.toCategoryDtoList() }
-            .getOrElse { return Outcome.Error(it) }
-        val subcategoryDtoList = deferredResults[4]
-            .map { it.toSubcategoryDtoList() }
-            .getOrElse { return Outcome.Error(it) }
-        val currencyDtoList = deferredResults[5]
+            .groupBy { it.treasureId }
+        val currenciesById = deferredResults[5]
             .map { it.toCurrencyDtoList() }
             .getOrElse { return Outcome.Error(it) }
+            .associateBy { it.id }
 
-
-        val valuesByTreasureId = treasureValueDtoList.groupBy { it.treasureId }
-        val currenciesById = currencyDtoList.associateBy { it.id }
-
-        val tree = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>()
-        treasureDtoList.forEach { treasureDto ->
+        treasureEntities.forEach { treasureDto ->
             val treasureValues = valuesByTreasureId[treasureDto.id]
-                ?.mapNotNull { it.toDomain(currenciesById) }
+                ?.mapNotNull { it.toEntity(treasureDto.id, currenciesById) }
                 ?: emptyList()
-            val treasure = treasureDto.toDomain(treasureValues)
-            treasureDto.factions.forEach { factionId ->
-                tree
-                    .getOrPut(factionId) { mutableMapOf() }
-                    .getOrPut(treasureDto.category) { mutableMapOf() }
-                    .getOrPut(treasureDto.subcategory ?: 0) { mutableListOf() }
-                    .add(treasure)
-            }
+            treasureDao.insertValues(treasureValues)
         }
 
-        val factions = factionDtoList.mapNotNull { factionDto ->
-            val categories = tree[factionDto.id] ?: return@mapNotNull null
-            factionDto.toDomain(categories, categoryDtoList, subcategoryDtoList)
-        }
-
-        return Outcome.Success(factions)
+        return Outcome.Success(Unit)
     }
 
 
-    override suspend fun loadEmissaries(): Outcome<List<Emissary>, DataError.Remote> {
+    override suspend fun syncEmissaries(): EmptyOutcome<DataError.Remote> {
         val emissaryDtoList = safeCall<ResponseDto> {
             httpClient.get("$BASE_URL/$ID/values/Emissaries!A:E") {
                 parameter("key", API_KEY)
             }
-        }.map { it.toEmissaryDtoList() }.getOrElse { return Outcome.Error(it) }
+        }.map { it.toEmissaryEntityList() }.getOrElse { return Outcome.Error(it) }
 
-        val emissaries = emissaryDtoList.map { it.toDomain() }
-        return Outcome.Success(emissaries)
+        treasureDao.insertEmissaries(emissaryDtoList)
+        return Outcome.Success(Unit)
     }
+
+
+    override fun getTreasure(): Flow<List<Faction>> {
+        return combine(
+            treasureDao.getAllTreasure(),
+            treasureDao.getAllFactions(),
+            treasureDao.getAllCategories(),
+            treasureDao.getAllSubcategory()
+        ) { allTreasure, allFactions, allCategories, allSubcategories ->
+
+            val tree = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>()
+            allTreasure.forEach { treasureWithValues ->
+                val treasureEntity = treasureWithValues.treasure
+                val treasure = treasureWithValues.toDomain()
+                treasureEntity.factions.split(",").forEach { factionId ->
+                    tree
+                        .getOrPut(factionId.toInt()) { mutableMapOf() }
+                        .getOrPut(treasureEntity.category.toInt()) { mutableMapOf() }
+                        .getOrPut(treasureEntity.subcategory.toInt()) { mutableListOf() }
+                        .add(treasure)
+                }
+            }
+
+            allFactions.mapNotNull { faction ->
+                val categories = tree[faction.id] ?: return@mapNotNull null
+                faction.toDomain(categories, allCategories, allSubcategories)
+            }
+        }
+    }
+
+    override fun getEmissaries(): Flow<List<Emissary>> {
+        return treasureDao.getAllEmissaries().map {
+            it.map { emissaries -> emissaries.toDomain() }
+        }
+    }
+
 
     @Suppress("SpellCheckingInspection")
     companion object {
         const val BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
+        const val ID = "1b3DQ7vPqF8EQq7lviwipRljqYzbyjXfRGJPn3ucc-ss"
+        const val API_KEY = "AIzaSyCeStCTxsllXdoepyUSGKN88sWPVldcm58"
     }
 }

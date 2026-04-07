@@ -2,6 +2,7 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.formatAsAmount
-import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.throttleClick
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasureValue
 import com.wynndie.sottreasurecalculator.sharedResources.Res
 import com.wynndie.sottreasurecalculator.sharedResources.ic_add
-import com.wynndie.sottreasurecalculator.sharedResources.ic_gold
 import com.wynndie.sottreasurecalculator.sharedResources.ic_minus
 import org.jetbrains.compose.resources.painterResource
 
@@ -59,10 +58,10 @@ fun TreasureTile(
                         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(Res.drawable.ic_gold),
-                            contentDescription = null
-                        )
+//                        Image(
+//                            painter = painterResource(Res.drawable.ic_gold),
+//                            contentDescription = null
+//                        )
 
                         val price = if (currency.minPrice != currency.maxPrice) {
                             val minPrice = currency.minPrice.toString().formatAsAmount()
@@ -71,7 +70,7 @@ fun TreasureTile(
                         } else currency.minPrice.toString().formatAsAmount()
 
                         Text(
-                            text = price
+                            text = "${currency.name}: $price"
                         )
                     }
                 }
@@ -89,7 +88,7 @@ fun TreasureTile(
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.small)
                     .size(MaterialTheme.sizing.medium)
-                    .throttleClick(onClick = onClickIncrement)
+                    .clickable(onClick = onClickIncrement)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.ic_add),
@@ -106,7 +105,7 @@ fun TreasureTile(
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.small)
                     .size(MaterialTheme.sizing.medium)
-                    .throttleClick(onClick = onClickDecrement)
+                    .clickable(onClick = onClickDecrement)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.ic_minus),

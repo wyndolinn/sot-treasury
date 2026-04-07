@@ -3,6 +3,7 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.thenIf
-import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.throttleClick
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Category
 
@@ -59,7 +59,7 @@ fun TreasureCategory(
                             )
                         }
                         .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .throttleClick {
+                        .clickable {
                             onClickSubcategory(category.subcategories.indexOf(subcategory))
                         }
                         .padding(MaterialTheme.spacing.small)
