@@ -30,7 +30,8 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0.0-beta1"
+        versionName = "1.0.0"
+        versionNameSuffix = "-beta1"
     }
     packaging {
         resources {
@@ -38,8 +39,42 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
             isMinifyEnabled = false
+
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "_debug"
+
+            manifestPlaceholders["usesCleartextTraffic"] = true
+        }
+
+        create("qa") {
+            initWith(getByName("debug"))
+
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "_qa"
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            manifestPlaceholders["usesCleartextTraffic"] = true
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            manifestPlaceholders["usesCleartextTraffic"] = false
         }
     }
     compileOptions {
@@ -53,3 +88,8 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
 }
 
+base {
+    val version = android.defaultConfig.versionName
+    val suffix = android.defaultConfig.versionNameSuffix
+    archivesName.set("sot-treasury-$version$suffix")
+}

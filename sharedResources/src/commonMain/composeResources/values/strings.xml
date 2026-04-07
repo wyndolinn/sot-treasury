@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="app_name">Treasure Calculator</string>
+    <string name="app_name">SoT Treasury</string>
 
     <!--  REMOTE DATA ERRORS  -->
     <string name="error_bad_request">Invalid request. Please check your input and try again.</string>
