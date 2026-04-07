@@ -2,15 +2,22 @@ package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,12 +33,17 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.SubcomposeAsyncImage
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
+import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components.TreasureCategory
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.ChangeTreasureAmount
@@ -158,6 +170,37 @@ private fun TreasureScreen(
                     Tab(
                         selected = selected,
                         onClick = { onAction(SelectFactionPage(index)) },
+                        icon = {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .padding(MaterialTheme.spacing.extraSmall)
+                                    .size(MaterialTheme.sizing.medium)
+                                    .clip(CircleShape)
+                                    .background(Color("FF2C3134".hexToLong()))
+                            ) {
+                                SubcomposeAsyncImage(
+                                    model = faction.icon,
+                                    contentDescription = null,
+                                    success = {
+                                        Image(
+                                            painter = it.painter,
+                                            contentDescription = null,
+                                            modifier = Modifier.padding(MaterialTheme.spacing.small)
+                                        )
+                                    },
+                                    error = {
+                                        Text(
+                                            text = faction.name.split(" ").map { it.first() }.joinToString(""),
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight(800),
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                )
+                            }
+                        },
                         text = {
                             Text(
                                 text = faction.name,

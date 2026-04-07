@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Emissary
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.TreasureValue
@@ -82,7 +84,9 @@ fun TreasureSheetContent(
                 colors = IconButtonDefaults.iconButtonColors().copy(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.size(MaterialTheme.sizing.extraLarge)
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_reload),

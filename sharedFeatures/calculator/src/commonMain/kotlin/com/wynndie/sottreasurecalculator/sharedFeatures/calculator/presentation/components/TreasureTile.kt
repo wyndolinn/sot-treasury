@@ -10,13 +10,19 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.formatAsAmount
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
@@ -47,21 +53,35 @@ fun TreasureTile(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = title
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight(600)
             )
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-            ) {
+            Column {
                 currencies.forEach { currency ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-//                        Image(
-//                            painter = painterResource(Res.drawable.ic_gold),
-//                            contentDescription = null
-//                        )
+                        SubcomposeAsyncImage(
+                            model = currency.icon,
+                            contentDescription = null,
+                            success = {
+                                Image(
+                                    painter = it.painter,
+                                    contentDescription = contentDescription,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
+                            error = {
+                                Text(
+                                    text = "${currency.name}:",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        )
 
                         val price = if (currency.minPrice != currency.maxPrice) {
                             val minPrice = currency.minPrice.toString().formatAsAmount()
@@ -70,7 +90,8 @@ fun TreasureTile(
                         } else currency.minPrice.toString().formatAsAmount()
 
                         Text(
-                            text = "${currency.name}: $price"
+                            text = price,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }

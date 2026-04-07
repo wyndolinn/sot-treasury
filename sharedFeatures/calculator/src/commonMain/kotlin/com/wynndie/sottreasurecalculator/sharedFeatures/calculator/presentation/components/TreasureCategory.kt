@@ -62,7 +62,10 @@ fun TreasureCategory(
                         .clickable {
                             onClickSubcategory(category.subcategories.indexOf(subcategory))
                         }
-                        .padding(MaterialTheme.spacing.small)
+                        .padding(
+                            horizontal = MaterialTheme.spacing.medium,
+                            vertical = MaterialTheme.spacing.small
+                        )
                 ) {
                     Text(
                         text = subcategory.name,
