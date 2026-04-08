@@ -1,24 +1,15 @@
 package com.wynndie.sottreasurecalculator.sharedFeatures.calculator.presentation.components
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.wynndie.sottreasurecalculator.sharedCore.presentation.extensions.thenIf
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasurecalculator.sharedFeatures.calculator.domain.models.Category
 
@@ -37,41 +28,21 @@ fun TreasureCategory(
     ) {
         Text(
             text = category.name,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight(600)
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight(800)
         )
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            category.subcategories.forEach { subcategory ->
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .thenIf(selectedSubcategory == category.subcategories.indexOf(subcategory)) {
-                            Modifier.border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.secondary,
-                                shape = MaterialTheme.shapes.small
-                            )
-                        }
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .clickable {
-                            onClickSubcategory(category.subcategories.indexOf(subcategory))
-                        }
-                        .padding(
-                            horizontal = MaterialTheme.spacing.medium,
-                            vertical = MaterialTheme.spacing.small
-                        )
-                ) {
-                    Text(
-                        text = subcategory.name,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontWeight = FontWeight(600)
+        if (category.subcategories.size > 1) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                category.subcategories.forEachIndexed { index, subcategory ->
+                    SubcategoryChip(
+                        label = subcategory.name,
+                        selected = selectedSubcategory == index,
+                        onClickSubcategory = { onClickSubcategory(index) }
                     )
                 }
             }
@@ -88,8 +59,8 @@ fun TreasureCategory(
                             title = item.name,
                             currencies = item.values,
                             amount = amount,
-                            onClickIncrement = { onChangeAmount(item.id, amount + 1) },
-                            onClickDecrement = { onChangeAmount(item.id, amount - 1) },
+                            onIncrement = { onChangeAmount(item.id, amount + 1) },
+                            onDecrement = { onChangeAmount(item.id, amount - 1) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
