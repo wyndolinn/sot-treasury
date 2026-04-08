@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +16,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.SubcomposeAsyncImage
+import com.wynndie.sottreasurecalculator.sharedCore.presentation.components.states.FailedScreen
+import com.wynndie.sottreasurecalculator.sharedCore.presentation.components.states.LoadingScreen
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasurecalculator.sharedCore.presentation.theme.sizing
@@ -114,18 +113,24 @@ fun TreasureScreenRoot(
         Crossfade(targetState = state.loadingState) { loadingState ->
             when (loadingState) {
                 LoadingState.Loading -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    LoadingScreen(
                         modifier = modifier
                             .fillMaxSize()
                             .padding(innerPadding)
-                    ) {
-                        LoadingIndicator()
-                    }
+                    )
                 }
 
                 is LoadingState.Failed -> {
-
+                    FailedScreen(
+                        message = loadingState.message.asString(),
+                        onRetry = { viewModel.onAction(TreasureAction.ReloadData) },
+                        onOffline = if (!state.factions.isEmpty() && !state.emissaries.isEmpty()) {
+                            { viewModel.onAction(TreasureAction.GoOffline) }
+                        } else null,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    )
                 }
 
                 LoadingState.Finished -> {
@@ -192,7 +197,8 @@ private fun TreasureScreen(
                                     },
                                     error = {
                                         Text(
-                                            text = faction.name.split(" ").map { it.first() }.joinToString(""),
+                                            text = faction.name.split(" ").map { it.first() }
+                                                .joinToString(""),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight(800),
                                             color = Color.White,

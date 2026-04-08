@@ -27,4 +27,7 @@
     <string name="error_below_minimum_length">Must be at least %1$d characters.</string>
     <string name="error_above_maximum_length">Must be no more than %1$d characters.</string>
     <string name="error_exact_length_required">Must be exactly %1$d characters.</string>
+
+    <string name="retry">Retry</string>
+    <string name="go_offline">Stay offline</string>
 </resources>

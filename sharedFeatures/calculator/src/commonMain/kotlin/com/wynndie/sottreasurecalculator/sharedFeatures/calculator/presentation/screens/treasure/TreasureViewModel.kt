@@ -45,6 +45,7 @@ class TreasureViewModel(
     fun onAction(action: TreasureAction) {
         when (action) {
             TreasureAction.ReloadData -> syncData()
+            TreasureAction.GoOffline -> goOffline()
             is TreasureAction.SelectEmissary -> selectEmissary(action.id)
             is TreasureAction.SelectFactionPage -> selectFactionPage(action.id)
             is TreasureAction.ToggleEmissaryPicker -> toggleEmissaryPicker(action.open)
@@ -97,6 +98,12 @@ class TreasureViewModel(
             }
 
             _state.update { it.copy(loadingState = LoadingState.Finished) }
+        }
+    }
+
+    private fun goOffline() {
+        _state.update {
+            it.copy(loadingState = LoadingState.Finished)
         }
     }
 
