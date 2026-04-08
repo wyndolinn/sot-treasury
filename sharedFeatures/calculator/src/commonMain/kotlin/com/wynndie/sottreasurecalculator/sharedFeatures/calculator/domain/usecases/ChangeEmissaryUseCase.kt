@@ -13,12 +13,15 @@ class ChangeEmissaryUseCase {
 
         treasureAmounts.forEach { (treasureId, amount) ->
             val treasure = allTreasure[treasureId] ?: return@forEach
-            val targetEmissary = treasure.sellableTo
+            val targetEmissaryId = treasure.sellableTo
                 .find { it == emissaryId }
                 ?: treasure.sellableTo.first()
-            val valuesMap = valuePerEmissary[targetEmissary].orEmpty().toMutableMap()
+            val valuesMap = valuePerEmissary[targetEmissaryId].orEmpty().toMutableMap()
 
             treasure.values.forEach { value ->
+                if (value.currencyId == 0) {
+                    if (targetEmissaryId != emissaryId) return@forEach
+                }
                 val current = valuesMap[value.currencyId] ?: Pair(0, 0)
                 valuesMap[value.currencyId] = Pair(
                     current.first + (value.minPrice ?: 0) * amount,
@@ -26,7 +29,7 @@ class ChangeEmissaryUseCase {
                 )
             }
 
-            valuePerEmissary[targetEmissary] = valuesMap
+            valuePerEmissary[targetEmissaryId] = valuesMap
         }
 
         return valuePerEmissary

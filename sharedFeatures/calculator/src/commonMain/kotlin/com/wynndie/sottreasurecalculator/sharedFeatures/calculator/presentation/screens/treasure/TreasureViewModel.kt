@@ -100,12 +100,15 @@ class TreasureViewModel(
         }
     }
 
-    private fun selectSubcategory(factionId: Int, categoryId: Int, subcategoryId: Int) {
+    private fun selectSubcategory(factionId: Int, categoryId: Int, subcategoryIndex: Int) {
         _state.update { state ->
             val selectedSubcategories = state.selectedSubcategories.toMutableMap().apply {
                 val categories = getOrElse(factionId) { mapOf() }.toMutableMap()
-                categories[categoryId] = subcategoryId
-                put(factionId, categories)
+                if (subcategoryIndex > 0) {
+                    categories[categoryId] = subcategoryIndex
+                } else categories.remove(categoryId)
+
+                if (categories.isNotEmpty()) put(factionId, categories) else remove(factionId)
             }
 
             state.copy(selectedSubcategories = selectedSubcategories)
@@ -114,13 +117,16 @@ class TreasureViewModel(
 
     private fun changeTreasureAmount(id: Int, amount: Int) {
         _state.update { state ->
-            val treasureAmounts = state.treasureAmounts.toMutableMap().apply { put(id, amount) }
+            val treasureAmounts = state.treasureAmounts.toMutableMap().apply {
+                if (amount > 0) put(id, amount) else remove(id)
+            }
             val valuePerEmissary = changeTreasureAmountUseCase(
                 treasureId = id,
                 oldAmount = state.treasureAmounts[id] ?: 0,
                 newAmount = amount,
                 allTreasure = allTreasure,
-                valuePerEmissary = state.valuePerEmissary
+                valuePerEmissary = state.valuePerEmissary,
+                selectedEmissaryId = state.selectedEmissary
             )
 
             state.copy(

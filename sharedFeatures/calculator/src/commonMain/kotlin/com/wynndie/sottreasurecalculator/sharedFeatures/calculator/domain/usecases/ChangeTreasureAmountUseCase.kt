@@ -7,6 +7,7 @@ class ChangeTreasureAmountUseCase {
         treasureId: Int,
         oldAmount: Int,
         newAmount: Int,
+        selectedEmissaryId: Int,
         allTreasure: Map<Int, Treasure>,
         valuePerEmissary: Map<Int, Map<Int, Pair<Int, Int>>>
     ): Map<Int, Map<Int, Pair<Int, Int>>> {
@@ -14,19 +15,28 @@ class ChangeTreasureAmountUseCase {
         val newValuePerEmissary = valuePerEmissary.toMutableMap()
         val treasure = allTreasure[treasureId] ?: return valuePerEmissary
 
-        val emissaryId = treasure.sellableTo.first()
-        val valuesMap = newValuePerEmissary[emissaryId].orEmpty().toMutableMap()
+        val targetEmissaryId = treasure.sellableTo
+            .find { it == selectedEmissaryId }
+            ?: treasure.sellableTo.first()
+        val valuesMap = newValuePerEmissary[targetEmissaryId].orEmpty().toMutableMap()
         val amountDifference = newAmount - oldAmount
 
         treasure.values.forEach { value ->
+            if (value.currencyId == 0) {
+                if (targetEmissaryId != selectedEmissaryId) return@forEach
+            }
             val current = valuesMap[value.currencyId] ?: Pair(0, 0)
-            valuesMap[value.currencyId] = Pair(
-                current.first + (value.minPrice ?: 0) * amountDifference,
-                current.second + (value.maxPrice ?: 0) * amountDifference
-            )
+            val minValue = current.first + (value.minPrice ?: 0) * amountDifference
+            val maxValue = current.second + (value.maxPrice ?: 0) * amountDifference
+            if (minValue > 0 || maxValue > 0) {
+                valuesMap[value.currencyId] = Pair(minValue, maxValue)
+            } else valuesMap.remove(value.currencyId)
         }
 
-        newValuePerEmissary[emissaryId] = valuesMap
+        if (valuesMap.isNotEmpty()) {
+            newValuePerEmissary[targetEmissaryId] = valuesMap
+        } else newValuePerEmissary.remove(targetEmissaryId)
+
         return newValuePerEmissary
     }
 }
