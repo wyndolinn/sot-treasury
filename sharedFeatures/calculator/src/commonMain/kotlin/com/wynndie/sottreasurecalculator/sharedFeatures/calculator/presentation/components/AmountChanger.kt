@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,7 +41,7 @@ fun AmountChanger(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.size(MaterialTheme.sizing.medium)
         ) {
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_add),
                 contentDescription = null
             )
@@ -55,9 +56,10 @@ fun AmountChanger(
         IconButton(
             onClick = onDecrement,
             shape = MaterialTheme.shapes.small,
+            enabled = amount > 0,
             modifier = Modifier.size(MaterialTheme.sizing.medium)
         ) {
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_minus),
                 contentDescription = null
             )
