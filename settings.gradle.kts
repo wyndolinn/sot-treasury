@@ -1,4 +1,4 @@
-rootProject.name = "SoTTreasureCalculator"
+rootProject.name = "sot-treasury"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

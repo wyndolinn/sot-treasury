@@ -16,7 +16,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedCore"
+        namespace = "com.wynndie.sottreasury.sharedCore"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -54,7 +54,6 @@ kotlin {
             api(libs.compose.foundation)
             api(libs.compose.material3)
             api(libs.compose.ui)
-            api(libs.compose.components.resources)
             api(libs.compose.uiToolingPreview)
 
             api(libs.androidx.lifecycle.viewmodel)

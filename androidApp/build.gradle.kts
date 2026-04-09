@@ -22,11 +22,11 @@ dependencies {
 }
 
 android {
-    namespace = "com.wynndie.sottreasurecalculator"
+    namespace = "com.wynndie.sottreasury"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.wynndie.sottreasurecalculator"
+        applicationId = "com.wynndie.sottreasury"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

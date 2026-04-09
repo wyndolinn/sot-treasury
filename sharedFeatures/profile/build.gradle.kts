@@ -16,7 +16,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedFeatures.profile"
+        namespace = "com.wynndie.sottreasury.sharedFeatures.profile"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 

@@ -13,7 +13,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedResources"
+        namespace = "com.wynndie.sottreasury.sharedResources"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -34,13 +34,13 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
-            implementation(libs.compose.components.resources)
+            api(libs.compose.components.resources)
         }
     }
 }
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "com.wynndie.sottreasurecalculator.sharedResources"
+    packageOfResClass = "com.wynndie.sottreasury.sharedResources"
     generateResClass = auto
 }
