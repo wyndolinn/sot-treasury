@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Category
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
+import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Variant
 
 @Entity
 data class CategoryEntity(
@@ -12,17 +13,18 @@ data class CategoryEntity(
     val icon: String
 ) {
     fun toDomain(
-        subcategoriesTree: Map<Int, List<Treasure>>,
-        subcategories: List<SubcategoryEntity>
+        subcategoriesTree: Map<Int, Map<Int, List<Treasure>>>,
+        subcategories: List<SubcategoryEntity>,
+        variants: List<VariantEntity>
     ): Category {
         return Category(
             id = id,
             name = name,
             icon = icon,
-            subcategories = subcategoriesTree.mapNotNull { (subcategoryId, treasures) ->
+            subcategories = subcategoriesTree.mapNotNull { (subcategoryId, variantsTree) ->
                 subcategories
                     .find { it.id == subcategoryId }
-                    ?.toDomain(treasures)
+                    ?.toDomain(variantsTree, variants)
                     ?: return@mapNotNull null
             }
         )

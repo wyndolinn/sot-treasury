@@ -64,6 +64,7 @@ fun TreasureScreenRoot(
             .asSequence()
             .flatMap { it.categories }
             .flatMap { it.subcategories }
+            .flatMap { it.variants }
             .flatMap { it.treasure }
             .flatMap { it.values }
             .distinctBy { it.currencyId }
@@ -242,13 +243,7 @@ private fun TreasureScreen(
                             ?.get(category.id)
                             ?: 0,
                         onClickSubcategory = {
-                            onAction(
-                                SelectSubcategory(
-                                    faction.id,
-                                    category.id,
-                                    it
-                                )
-                            )
+                            onAction(SelectSubcategory(faction.id, category.id, it))
                         },
                         onChangeAmount = { treasureId, amount ->
                             onAction(ChangeTreasureAmount(treasureId, amount))

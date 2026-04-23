@@ -1,8 +1,8 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.domain.models
 
-data class Subcategory(
-    val id: Int?,
+data class Variant(
+    val id: Int,
     val name: String,
     val icon: String,
-    val variants: List<Variant>
+    val treasure: List<Treasure>
 )

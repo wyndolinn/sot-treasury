@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Subcategory
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
+import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Variant
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @Entity
 data class SubcategoryEntity(
@@ -11,12 +14,20 @@ data class SubcategoryEntity(
     val name: String,
     val icon: String
 ) {
-    fun toDomain(treasures: List<Treasure>) = Subcategory(
-        id = id,
-        name = name,
-        icon = icon,
-        treasure = treasures
-    )
+    fun toDomain(
+        variantsTree: Map<Int, List<Treasure>>,
+        variants: List<VariantEntity>
+    ): Subcategory{
+        return Subcategory(
+            id = id,
+            name = name,
+            icon = icon,
+            variants = variantsTree.map { (variantId, treasure) ->
+                val variant = variants.find { it.id == variantId } ?: VariantEntity(-1, "", "")
+                variant.toDomain(treasure)
+            }
+        )
+    }
 
     companion object {
         fun from(response: List<String>): SubcategoryEntity {

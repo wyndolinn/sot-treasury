@@ -27,9 +27,9 @@ data class TreasureValueDto(
         fun from(response: List<String>): TreasureValueDto {
             return TreasureValueDto(
                 treasureId = response[0].toInt(),
-                currencyId = response[1].toIntOrNull(),
-                minValue = response[2].toIntOrNull(),
-                maxValue = response[3].toIntOrNull()
+                currencyId = response.getOrNull(1)?.toIntOrNull(),
+                minValue = response.getOrNull(2)?.toIntOrNull(),
+                maxValue = response.getOrNull(3)?.toIntOrNull()
             )
         }
     }

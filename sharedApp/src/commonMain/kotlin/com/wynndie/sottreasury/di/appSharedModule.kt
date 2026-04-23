@@ -9,7 +9,13 @@ import org.koin.dsl.module
 
 val appSharedModule = module {
     single { HttpClientFactory.create(get()) }
-    single { get<AppDatabaseFactory>().create().setDriver(BundledSQLiteDriver()).build() }
+    single {
+        get<AppDatabaseFactory>()
+            .create()
+            .setDriver(BundledSQLiteDriver())
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
+    }
     single { get<AppDataStoreFactory>().create() }
 
     single { get<AppDatabase>().treasureDao }

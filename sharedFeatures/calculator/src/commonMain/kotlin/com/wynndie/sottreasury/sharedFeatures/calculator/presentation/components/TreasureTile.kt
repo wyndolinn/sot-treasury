@@ -14,17 +14,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
+import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureValue
 
 @Composable
 fun TreasureTile(
-    title: String,
-    currencies: List<TreasureValue>,
-    amount: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit,
+    treasure: Treasure,
+    amounts: Map<Int, Int>,
+    onChangeAmount: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val amount = amounts[treasure.id] ?: 0
     Column(
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
         modifier = modifier
@@ -33,7 +33,7 @@ fun TreasureTile(
             .padding(MaterialTheme.spacing.medium)
     ) {
         Text(
-            text = title,
+            text = treasure.name,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight(600)
         )
@@ -42,15 +42,15 @@ fun TreasureTile(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                currencies.forEach { currency ->
+                treasure.values.forEach { currency ->
                     TreasureValue(currency)
                 }
             }
 
             AmountChanger(
                 amount = amount,
-                onIncrement = onIncrement,
-                onDecrement = onDecrement
+                onIncrement = { onChangeAmount(treasure.id, amount + 1) },
+                onDecrement = { onChangeAmount(treasure.id, amount - 1) }
             )
         }
     }
@@ -61,14 +61,17 @@ fun TreasureTile(
 private fun TreasureTilePreview() {
     AppTheme {
         TreasureTile(
-            title = "Captain's Chest",
-            currencies = listOf(
-                TreasureValue(0, "Gold", "", 600, 800),
-                TreasureValue(1, "EmissaryValue", "", 1000, 1000),
+            treasure = Treasure(
+                id = 1,
+                name = "Carrot",
+                sellableTo = emptyList(),
+                values = listOf(
+                    TreasureValue(0, "Gold", "", 600, 800),
+                    TreasureValue(1, "EmissaryValue", "", 1000, 1000)
+                )
             ),
-            amount = 3,
-            onIncrement = { },
-            onDecrement = { },
+            amounts = mapOf(0 to 0, 1 to 3, 2 to 7),
+            onChangeAmount = { _, _ -> },
             modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )
     }

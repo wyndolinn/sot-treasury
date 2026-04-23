@@ -53,16 +53,25 @@ fun TreasureCategory(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
-                    subcategory.treasure.forEach { item ->
-                        val amount = treasureAmounts[item.id] ?: 0
-                        TreasureTile(
-                            title = item.name,
-                            currencies = item.values,
-                            amount = amount,
-                            onIncrement = { onChangeAmount(item.id, amount + 1) },
-                            onDecrement = { onChangeAmount(item.id, amount - 1) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    subcategory.variants.forEach { variant ->
+                        if (variant.id < 0) {
+                            variant.treasure.forEach { treasure ->
+                                TreasureTile(
+                                    treasure = treasure,
+                                    amounts = treasureAmounts,
+                                    onChangeAmount = { id, amount -> onChangeAmount(id, amount) },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        } else {
+                            TreasureTileVariant(
+                                title = variant.name,
+                                treasure = variant.treasure,
+                                amounts = treasureAmounts,
+                                onChangeAmount = { id, amount -> onChangeAmount(id, amount) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

@@ -70,8 +70,10 @@ class TreasureViewModel(
 
             allEmissaries = emissaries.associateBy { it.id }
             allTreasure = treasure
+                .asSequence()
                 .flatMap { it.categories }
                 .flatMap { it.subcategories }
+                .flatMap { it.variants }
                 .flatMap { it.treasure }
                 .associateBy { it.id }
 

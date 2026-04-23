@@ -3,24 +3,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-dependencies {
-    implementation(projects.sharedApp)
-
-    implementation(libs.compose.uiToolingPreview)
-    implementation(libs.androidx.activity.compose)
-
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.components.resources)
-    implementation(libs.compose.uiToolingPreview)
-    implementation(libs.androidx.lifecycle.viewmodelCompose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-
-    implementation(libs.kotlin.test)
-}
-
 android {
     namespace = "com.wynndie.sottreasury"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -84,8 +66,23 @@ android {
 }
 
 dependencies {
+    implementation(projects.sharedApp)
+
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
+
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.components.resources)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.lifecycle.viewmodelCompose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
     debugImplementation(libs.compose.uiTooling)
+
+    implementation(libs.kotlin.test)
 }
 
 base {

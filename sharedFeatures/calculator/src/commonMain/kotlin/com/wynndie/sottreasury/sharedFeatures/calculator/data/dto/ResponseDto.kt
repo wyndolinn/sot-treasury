@@ -5,6 +5,7 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.Emi
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.FactionEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.SubcategoryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.VariantEntity
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,5 +20,6 @@ data class ResponseDto(
     fun toFactionEntities() = values.drop(1).map { FactionEntity.from(it) }
     fun toCategoryEntities() = values.drop(1).map { CategoryEntity.from(it) }
     fun toSubcategoryEntities() = values.drop(1).map { SubcategoryEntity.from(it) }
+    fun toVariantEntities() = values.drop(1).map { VariantEntity.from(it) }
     fun toEmissaryEntityList() = values.drop(1).map { EmissaryEntity.from(it) }
 }

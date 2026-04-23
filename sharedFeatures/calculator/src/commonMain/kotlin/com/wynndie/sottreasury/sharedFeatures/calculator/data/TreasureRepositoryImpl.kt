@@ -30,44 +30,51 @@ class TreasureRepositoryImpl(
 
         val deferredResults = coroutineScope {
             listOf(
-                async {
+                async { // [0] Treasure
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Treasure!A:F") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Treasure!A:G") {
                             parameter("key", API_KEY)
                         }
                     }
                 },
-                async {
+                async { // [1] Treasure_Values
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Treasure_Values!A:F") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Treasure_Values!A:D") {
                             parameter("key", API_KEY)
                         }
                     }
                 },
-                async {
+                async { // [2] Factions
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Factions!A:C") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Factions!A:C") {
                             parameter("key", API_KEY)
                         }
                     }
                 },
-                async {
+                async { // [3] Categories
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Categories!A:C") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Categories!A:C") {
                             parameter("key", API_KEY)
                         }
                     }
                 },
-                async {
+                async { // [4] Subcategories
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Subcategories!A:C") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Subcategories!A:C") {
                             parameter("key", API_KEY)
                         }
                     }
                 },
-                async {
+                async { // [5] Currencies
                     safeCall<ResponseDto> {
-                        httpClient.get("$BASE_URL/$ID/values/Currencies!A:C") {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Currencies!A:C") {
+                            parameter("key", API_KEY)
+                        }
+                    }
+                },
+                async { // [6] Variants
+                    safeCall<ResponseDto> {
+                        httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Variants!A:C") {
                             parameter("key", API_KEY)
                         }
                     }
@@ -79,6 +86,10 @@ class TreasureRepositoryImpl(
         val treasureEntities = deferredResults[0]
             .map { it.toTreasureEntityList() }
             .getOrElse { return Outcome.Error(it) }
+        val valuesByTreasureId = deferredResults[1]
+            .map { it.toTreasureValueDtoList() }
+            .getOrElse { return Outcome.Error(it) }
+            .groupBy { it.treasureId }
         val factionEntities = deferredResults[2]
             .map { it.toFactionEntities() }
             .getOrElse { return Outcome.Error(it) }
@@ -88,21 +99,19 @@ class TreasureRepositoryImpl(
         val subcategoryEntities = deferredResults[4]
             .map { it.toSubcategoryEntities() }
             .getOrElse { return Outcome.Error(it) }
+        val currenciesById = deferredResults[5]
+            .map { it.toCurrencyDtoList() }
+            .getOrElse { return Outcome.Error(it) }
+            .associateBy { it.id }
+        val variantEntities = deferredResults[6]
+            .map { it.toVariantEntities() }
+            .getOrElse { return Outcome.Error(it) }
 
         treasureDao.insertTreasure(treasureEntities)
         treasureDao.insertFactions(factionEntities)
         treasureDao.insertCategories(categoryEntities)
         treasureDao.insertSubcategories(subcategoryEntities)
-
-
-        val valuesByTreasureId = deferredResults[1]
-            .map { it.toTreasureValueDtoList() }
-            .getOrElse { return Outcome.Error(it) }
-            .groupBy { it.treasureId }
-        val currenciesById = deferredResults[5]
-            .map { it.toCurrencyDtoList() }
-            .getOrElse { return Outcome.Error(it) }
-            .associateBy { it.id }
+        treasureDao.insertVariants(variantEntities)
 
         treasureEntities.forEach { treasureDto ->
             val treasureValues = valuesByTreasureId[treasureDto.id]
@@ -117,7 +126,7 @@ class TreasureRepositoryImpl(
 
     override suspend fun syncEmissaries(): EmptyOutcome<DataError.Remote> {
         val emissaryDtoList = safeCall<ResponseDto> {
-            httpClient.get("$BASE_URL/$ID/values/Emissaries!A:E") {
+            httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Emissaries!A:E") {
                 parameter("key", API_KEY)
             }
         }.map { it.toEmissaryEntityList() }.getOrElse { return Outcome.Error(it) }
@@ -132,10 +141,12 @@ class TreasureRepositoryImpl(
             treasureDao.getAllTreasure(),
             treasureDao.getAllFactions(),
             treasureDao.getAllCategories(),
-            treasureDao.getAllSubcategory()
-        ) { allTreasure, allFactions, allCategories, allSubcategories ->
+            treasureDao.getAllSubcategory(),
+            treasureDao.getAllVariants()
+        ) { allTreasure, allFactions, allCategories, allSubcategories, allVariants ->
 
-            val tree = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>()
+            val tree =
+                mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>>()
             allTreasure.forEach { treasureWithValues ->
                 val treasureEntity = treasureWithValues.treasure
                 val treasure = treasureWithValues.toDomain()
@@ -143,14 +154,15 @@ class TreasureRepositoryImpl(
                     tree
                         .getOrPut(factionId.toInt()) { mutableMapOf() }
                         .getOrPut(treasureEntity.category.toInt()) { mutableMapOf() }
-                        .getOrPut(treasureEntity.subcategory.toInt()) { mutableListOf() }
+                        .getOrPut(treasureEntity.subcategory.toInt()) { mutableMapOf() }
+                        .getOrPut(treasureEntity.variant.toInt()) { mutableListOf() }
                         .add(treasure)
                 }
             }
 
             allFactions.mapNotNull { faction ->
-                val categories = tree[faction.id] ?: return@mapNotNull null
-                faction.toDomain(categories, allCategories, allSubcategories)
+                val categoriesTree = tree[faction.id] ?: return@mapNotNull null
+                faction.toDomain(categoriesTree, allCategories, allSubcategories, allVariants)
             }
         }
     }
@@ -165,7 +177,9 @@ class TreasureRepositoryImpl(
     @Suppress("SpellCheckingInspection")
     companion object {
         const val BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
-        const val ID = "1nu-iEo2SQIs4L-tYZno9YeGqg_YW1_j2kyFSTWyHpHs"
         const val API_KEY = "AIzaSyBlAu-CRXh6hnsioN-wf7WB3BIYr3Dr24c"
+
+        const val SHEET_ID_PROD = "1b3DQ7vPqF8EQq7lviwipRljqYzbyjXfRGJPn3ucc-ss"
+        const val SHEET_ID_TEST = "1nu-iEo2SQIs4L-tYZno9YeGqg_YW1_j2kyFSTWyHpHs"
     }
 }

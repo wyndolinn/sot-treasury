@@ -10,9 +10,9 @@ data class TreasureEntity(
     val factions: String,
     val category: String,
     val subcategory: String,
+    val variant: String,
     val name: String
 ) {
-
     companion object {
         fun from(response: List<String>): TreasureEntity {
             return TreasureEntity(
@@ -20,7 +20,8 @@ data class TreasureEntity(
                 sellableTo = response[1],
                 factions = response[2],
                 category = response[3],
-                subcategory = response[4].ifBlank { "0" },
+                subcategory = response.getOrNull(4)?.ifBlank { "0" } ?: "0",
+                variant = response.getOrNull(6)?.ifBlank { "-1" } ?: "-1",
                 name = response[5]
             )
         }

@@ -11,6 +11,8 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.Sub
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureValueEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureWithValues
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.VariantEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Variant
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,6 +48,14 @@ interface TreasureDao {
 
     @Upsert
     suspend fun insertSubcategories(entities: List<SubcategoryEntity>)
+
+
+    @Query("SELECT * FROM variantentity")
+    fun getAllVariants(): Flow<List<VariantEntity>>
+
+    @Upsert
+    suspend fun insertVariants(entities: List<VariantEntity>)
+
 
 
     @Query("SELECT * FROM emissaryentity")
