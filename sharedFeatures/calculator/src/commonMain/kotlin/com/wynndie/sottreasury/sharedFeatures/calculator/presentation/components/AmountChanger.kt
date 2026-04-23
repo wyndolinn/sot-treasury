@@ -36,12 +36,13 @@ fun AmountChanger(
             .background(MaterialTheme.colorScheme.surface)
     ) {
         IconButton(
-            onClick = onIncrement,
+            onClick = onDecrement,
             shape = MaterialTheme.shapes.small,
+            enabled = amount > 0,
             modifier = Modifier.size(MaterialTheme.sizing.medium)
         ) {
             Icon(
-                painter = painterResource(Res.drawable.ic_add),
+                painter = painterResource(Res.drawable.ic_minus),
                 contentDescription = null
             )
         }
@@ -53,13 +54,12 @@ fun AmountChanger(
         )
 
         IconButton(
-            onClick = onDecrement,
+            onClick = onIncrement,
             shape = MaterialTheme.shapes.small,
-            enabled = amount > 0,
             modifier = Modifier.size(MaterialTheme.sizing.medium)
         ) {
             Icon(
-                painter = painterResource(Res.drawable.ic_minus),
+                painter = painterResource(Res.drawable.ic_add),
                 contentDescription = null
             )
         }
