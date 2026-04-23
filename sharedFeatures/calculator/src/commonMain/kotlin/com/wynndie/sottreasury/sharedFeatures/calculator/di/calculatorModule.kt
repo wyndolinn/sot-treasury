@@ -4,7 +4,6 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.TreasureRepository
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.repositories.TreasureRepository
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.usecases.ChangeEmissaryUseCase
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.usecases.ChangeTreasureAmountUseCase
-import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.events.EventsViewModel
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -19,5 +18,4 @@ val calculatorModule: Module = module {
     factoryOf(::ChangeEmissaryUseCase)
 
     viewModelOf(::TreasureViewModel)
-    viewModelOf(::EventsViewModel)
 }

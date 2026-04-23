@@ -10,8 +10,5 @@ sealed interface Route : NavKey {
 
         @Serializable
         data object Treasure : Route, NavKey
-
-        @Serializable
-        data object Events : Route, NavKey
     }
 }

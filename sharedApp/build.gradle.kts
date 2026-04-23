@@ -50,7 +50,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.sharedCore)
             implementation(projects.sharedFeatures.calculator)
-            implementation(projects.sharedFeatures.profile)
 
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.jetbrains.navigation3.ui)

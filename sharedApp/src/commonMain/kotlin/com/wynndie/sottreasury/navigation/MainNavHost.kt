@@ -1,4 +1,4 @@
-package com.wynndie.sottreasury.sharedCore.navHosts
+package com.wynndie.sottreasury.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,9 +12,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.wynndie.sottreasury.navigation.Route
-import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.events.EventsScreenRoot
-import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.events.EventsViewModel
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureScreenRoot
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureViewModel
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,8 +31,10 @@ fun MainNavHost(
         configuration = SavedStateConfiguration {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
-                    subclass(Route.MainNavGraph.Treasure::class, Route.MainNavGraph.Treasure.serializer())
-                    subclass(Route.MainNavGraph.Events::class, Route.MainNavGraph.Events.serializer())
+                    subclass(
+                        Route.MainNavGraph.Treasure::class,
+                        Route.MainNavGraph.Treasure.serializer()
+                    )
                 }
             }
         },
@@ -57,11 +56,6 @@ fun MainNavHost(
                     val viewModel = koinViewModel<TreasureViewModel>()
 
                     TreasureScreenRoot(viewModel = viewModel)
-                }
-                entry<Route.MainNavGraph.Events> {
-                    val viewModel = koinViewModel<EventsViewModel>()
-
-                    EventsScreenRoot(viewModel = viewModel)
                 }
             }
         )
