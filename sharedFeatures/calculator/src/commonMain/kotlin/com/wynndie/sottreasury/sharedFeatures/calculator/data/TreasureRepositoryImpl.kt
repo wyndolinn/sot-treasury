@@ -104,16 +104,21 @@ class TreasureRepositoryImpl(
 
             val tree =
                 mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>>()
+
+            val treasureFactions = allTreasure.associate { treasureWithValues ->
+                val treasureId = treasureWithValues.treasure.id
+                val factions = treasureWithValues.treasure.factions.split(",").map { it.toInt() }
+                treasureId to factions
+            }
+
             allTreasure.forEach { treasureWithValues ->
                 val treasureEntity = treasureWithValues.treasure
-                val treasure = treasureWithValues.toDomain()
-                treasureEntity.factions.split(",").forEach { factionId ->
-                    tree
-                        .getOrPut(factionId.toInt()) { mutableMapOf() }
+                treasureFactions[treasureEntity.id]?.forEach { factionId ->
+                    tree.getOrPut(factionId) { mutableMapOf() }
                         .getOrPut(treasureEntity.category.toInt()) { mutableMapOf() }
                         .getOrPut(treasureEntity.subcategory.toInt()) { mutableMapOf() }
                         .getOrPut(treasureEntity.variant.toInt()) { mutableListOf() }
-                        .add(treasure)
+                        .add(treasureWithValues.toDomain())
                 }
             }
 
