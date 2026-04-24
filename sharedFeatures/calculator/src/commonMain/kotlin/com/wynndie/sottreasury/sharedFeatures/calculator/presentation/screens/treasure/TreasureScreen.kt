@@ -46,18 +46,6 @@ fun TreasureScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val currencies by derivedStateOf {
-        state.factions
-            .asSequence()
-            .flatMap { it.categories }
-            .flatMap { it.subcategories }
-            .flatMap { it.variants }
-            .flatMap { it.treasure }
-            .flatMap { it.values }
-            .distinctBy { it.currencyId }
-            .toList()
-    }
-
     val totalValues by derivedStateOf {
         val emissaryMultiplier = state.emissaryMultiplier
         val valuePerEmissary = state.valuePerEmissary
@@ -84,7 +72,7 @@ fun TreasureScreenRoot(
     BottomSheetScaffold(
         sheetContent = {
             TreasureSheetContent(
-                values = currencies,
+                values = state.currencies,
                 totalValues = totalValues,
                 emissaries = state.emissaries,
                 isEmissaryPickerOpen = state.isEmissaryPickerOpen,

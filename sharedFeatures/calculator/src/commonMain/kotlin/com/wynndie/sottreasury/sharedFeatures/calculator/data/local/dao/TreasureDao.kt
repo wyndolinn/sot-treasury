@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CategoryEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CurrencyEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.EmissaryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.FactionEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.SubcategoryEntity
@@ -12,7 +13,6 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.Tre
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureValueEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureWithValues
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.VariantEntity
-import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Variant
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -56,6 +56,12 @@ interface TreasureDao {
     @Upsert
     suspend fun insertVariants(entities: List<VariantEntity>)
 
+
+    @Query("SELECT * FROM currencyentity")
+    fun getAllCurrencies(): Flow<List<CurrencyEntity>>
+
+    @Upsert
+    suspend fun insertCurrencies(entities: List<CurrencyEntity>)
 
 
     @Query("SELECT * FROM emissaryentity")

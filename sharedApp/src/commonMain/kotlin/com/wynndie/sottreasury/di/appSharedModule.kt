@@ -13,7 +13,10 @@ val appSharedModule = module {
         get<AppDatabaseFactory>()
             .create()
             .setDriver(BundledSQLiteDriver())
-            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .addMigrations(
+                AppDatabase.MIGRATION_1_2,
+                AppDatabase.MIGRATION_2_3
+            )
             .build()
     }
     single { get<AppDataStoreFactory>().create() }

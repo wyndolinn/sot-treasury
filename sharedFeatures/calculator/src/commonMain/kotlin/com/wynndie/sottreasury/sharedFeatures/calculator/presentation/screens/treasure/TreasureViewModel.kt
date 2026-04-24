@@ -65,8 +65,9 @@ class TreasureViewModel(
     private fun collectData() {
         combine(
             treasureRepository.getTreasure(),
-            treasureRepository.getEmissaries()
-        ) { treasure, emissaries ->
+            treasureRepository.getEmissaries(),
+            treasureRepository.getCurrencies()
+        ) { treasure, emissaries, currencies ->
 
             allEmissaries = emissaries.associateBy { it.id }
             allTreasure = treasure
@@ -80,7 +81,8 @@ class TreasureViewModel(
             _state.update {
                 it.copy(
                     factions = treasure,
-                    emissaries = emissaries
+                    emissaries = emissaries,
+                    currencies = currencies
                 )
             }
         }.launchIn(viewModelScope)

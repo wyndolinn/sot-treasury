@@ -1,6 +1,7 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.data.dto
 
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CategoryEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CurrencyEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.EmissaryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.FactionEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.SubcategoryEntity
@@ -14,9 +15,9 @@ data class ResponseDto(
     val range: String,
     val values: List<List<String>>
 ) {
-    fun toTreasureEntityList() = values.drop(1).map { TreasureEntity.from(it) }
+    fun toTreasureEntities() = values.drop(1).map { TreasureEntity.from(it) }
     fun toTreasureValueDtoList() = values.drop(1).map { TreasureValueDto.from(it) }
-    fun toCurrencyDtoList() = values.drop(1).map { CurrencyDto.from(it) }
+    fun toCurrencyEntities() = values.drop(1).map { CurrencyEntity.from(it) }
     fun toFactionEntities() = values.drop(1).map { FactionEntity.from(it) }
     fun toCategoryEntities() = values.drop(1).map { CategoryEntity.from(it) }
     fun toSubcategoryEntities() = values.drop(1).map { SubcategoryEntity.from(it) }

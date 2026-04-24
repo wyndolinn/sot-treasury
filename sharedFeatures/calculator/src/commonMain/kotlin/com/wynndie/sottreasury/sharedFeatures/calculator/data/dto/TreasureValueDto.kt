@@ -1,5 +1,6 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.data.dto
 
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CurrencyEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureValueEntity
 
 data class TreasureValueDto(
@@ -10,7 +11,7 @@ data class TreasureValueDto(
 ) {
     fun toEntity(
         treasureId: Int,
-        currencies: Map<Int, CurrencyDto>
+        currencies: Map<Int, CurrencyEntity>
     ): TreasureValueEntity? {
         val currency = currencies[currencyId] ?: return null
         return TreasureValueEntity(

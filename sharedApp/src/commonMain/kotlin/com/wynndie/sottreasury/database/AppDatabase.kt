@@ -8,6 +8,7 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.dao.TreasureDao
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CategoryEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CurrencyEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.EmissaryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.FactionEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.SubcategoryEntity
@@ -23,9 +24,10 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.Var
         CategoryEntity::class,
         SubcategoryEntity::class,
         VariantEntity::class,
-        EmissaryEntity::class
+        EmissaryEntity::class,
+        CurrencyEntity::class
     ],
-    version = 2
+    version = 3
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -52,6 +54,21 @@ abstract class AppDatabase : RoomDatabase() {
                     """
                         ALTER TABLE treasureentity
                         ADD COLUMN variant TEXT NOT NULL
+                    """.trimIndent()
+                )
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
+                    """
+                        CREATE TABLE IF NOT EXISTS currencyentity (
+                            id INTEGER NOT NULL,
+                            name TEXT NOT NULL,
+                            icon TEXT NOT NULL,
+                            PRIMARY KEY(id)
+                        )
                     """.trimIndent()
                 )
             }
