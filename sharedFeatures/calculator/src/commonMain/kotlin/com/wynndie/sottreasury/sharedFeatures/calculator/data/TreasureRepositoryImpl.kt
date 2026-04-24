@@ -11,6 +11,7 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.dto.TreasureValueD
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.dao.TreasureDao
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CategoryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.CurrencyEntity
+import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.EmissaryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.FactionEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.SubcategoryEntity
 import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.TreasureEntity
@@ -23,68 +24,29 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.domain.repositories.Tre
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class TreasureRepositoryImpl(
     private val httpClient: HttpClient,
     private val treasureDao: TreasureDao
 ) : TreasureRepository {
-    override suspend fun syncTreasure(): EmptyOutcome<DataError.Remote> {
-
+    override suspend fun syncData(): EmptyOutcome<DataError.Remote> {
         val syncResult = coroutineScope {
-            val treasure = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Treasure!A:G") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toTreasureEntities() }
-            }
-            val treasureValues = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Treasure_Values!A:D") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toTreasureValueDtoList() }
-            }
-            val factions = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Factions!A:C") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toFactionEntities() }
-            }
-            val categories = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Categories!A:C") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toCategoryEntities() }
-            }
-            val subcategories = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Subcategories!A:C") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toSubcategoryEntities() }
-            }
-            val variants = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Variants!A:C") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toVariantEntities() }
-            }
-            val currencies = async {
-                safeCall<ResponseDto> {
-                    httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Currencies!A:C") {
-                        parameter("key", API_KEY)
-                    }
-                }.map { it.toCurrencyEntities() }
-            }
+            val treasure = fetchSheet("Treasure!A:G") { it.toTreasureEntities() }
+            val treasureValues = fetchSheet("Treasure_Values!A:D") { it.toTreasureValueDtoList() }
+            val factions = fetchSheet("Factions!A:C") { it.toFactionEntities() }
+            val categories = fetchSheet("Categories!A:C") { it.toCategoryEntities() }
+            val subcategories = fetchSheet("Subcategories!A:C") { it.toSubcategoryEntities() }
+            val variants = fetchSheet("Variants!A:C") { it.toVariantEntities() }
+            val currencies = fetchSheet("Currencies!A:C") { it.toCurrencyEntities() }
+            val emissaries = fetchSheet("Emissaries!A:E") { it.toEmissaryEntityList() }
 
             SyncResults(
                 treasure = treasure.await(),
@@ -93,69 +55,40 @@ class TreasureRepositoryImpl(
                 categories = categories.await(),
                 subcategories = subcategories.await(),
                 variants = variants.await(),
-                currencies = currencies.await()
+                currencies = currencies.await(),
+                emissaries = emissaries.await()
             )
         }
 
         val treasureEntities = syncResult.treasure.getOrElse { return Outcome.Error(it) }
-        val valuesByTreasureId = syncResult.treasureValues.getOrElse { return Outcome.Error(it) }
+        val treasureValuesDto = syncResult.treasureValues.getOrElse { return Outcome.Error(it) }
         val factionEntities = syncResult.factions.getOrElse { return Outcome.Error(it) }
         val categoryEntities = syncResult.categories.getOrElse { return Outcome.Error(it) }
         val subcategoryEntities = syncResult.subcategories.getOrElse { return Outcome.Error(it) }
         val variantEntities = syncResult.variants.getOrElse { return Outcome.Error(it) }
         val currencyEntities = syncResult.currencies.getOrElse { return Outcome.Error(it) }
-
-        treasureDao.insertTreasure(treasureEntities)
-        treasureDao.insertFactions(factionEntities)
-        treasureDao.insertCategories(categoryEntities)
-        treasureDao.insertSubcategories(subcategoryEntities)
-        treasureDao.insertVariants(variantEntities)
-        treasureDao.insertCurrencies(currencyEntities)
+        val emissaryEntities = syncResult.emissaries.getOrElse { return Outcome.Error(it) }
 
 
-        treasureEntities.forEach { treasureDto ->
-            val treasureValues = valuesByTreasureId.groupBy { it.treasureId }[treasureDto.id]
-                ?.mapNotNull {
-                    it.toEntity(
-                        treasureId = treasureDto.id,
-                        currencies = currencyEntities.associateBy { entity -> entity.id }
-                    )
-                }
-                ?: emptyList()
-            treasureDao.insertValues(treasureValues)
-        }
-
-        treasureDao.insertTreasure(treasureEntities)
-        treasureDao.insertFactions(factionEntities)
-        treasureDao.insertCategories(categoryEntities)
-        treasureDao.insertSubcategories(subcategoryEntities)
-        treasureDao.insertVariants(variantEntities)
-        treasureDao.insertCurrencies(currencyEntities)
-
-        treasureEntities.forEach { treasureDto ->
-            val treasureValues = valuesByTreasureId.groupBy { it.treasureId }[treasureDto.id]
-                ?.mapNotNull {
-                    it.toEntity(
-                        treasureId = treasureDto.id,
-                        currencies = currencyEntities.associateBy { entity -> entity.id }
-                    )
-                }
-                ?: emptyList()
-            treasureDao.insertValues(treasureValues)
-        }
-
-        return Outcome.Success(Unit)
-    }
-
-
-    override suspend fun syncEmissaries(): EmptyOutcome<DataError.Remote> {
-        val emissaryDtoList = safeCall<ResponseDto> {
-            httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/Emissaries!A:E") {
-                parameter("key", API_KEY)
+        coroutineScope {
+            launch { treasureDao.insertTreasure(treasureEntities) }
+            launch { treasureDao.insertFactions(factionEntities) }
+            launch { treasureDao.insertCategories(categoryEntities) }
+            launch { treasureDao.insertSubcategories(subcategoryEntities) }
+            launch { treasureDao.insertVariants(variantEntities) }
+            launch { treasureDao.insertCurrencies(currencyEntities) }
+            launch { treasureDao.insertEmissaries(emissaryEntities) }
+            launch {
+                val treasureValuesById = treasureValuesDto.groupBy { it.treasureId }
+                val currencyMap = currencyEntities.associateBy { it.id }
+                treasureEntities.flatMap { treasureEntity ->
+                    treasureValuesById[treasureEntity.id]?.mapNotNull {
+                        it.toEntity(treasureEntity.id, currencyMap)
+                    } ?: emptyList()
+                }.also { treasureDao.insertValues(it) }
             }
-        }.map { it.toEmissaryEntityList() }.getOrElse { return Outcome.Error(it) }
+        }.join()
 
-        treasureDao.insertEmissaries(emissaryDtoList)
         return Outcome.Success(Unit)
     }
 
@@ -204,6 +137,20 @@ class TreasureRepositoryImpl(
     }
 
 
+    private inline fun <reified T> CoroutineScope.fetchSheet(
+        sheetName: String,
+        crossinline mapper: (ResponseDto) -> T
+    ): Deferred<Outcome<T, DataError.Remote>> {
+        return async {
+            safeCall<ResponseDto> {
+                httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/$sheetName") {
+                    parameter("key", API_KEY)
+                }
+            }.map { mapper(it) }
+        }
+    }
+
+
     @Suppress("SpellCheckingInspection")
     companion object {
         private const val BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
@@ -219,7 +166,8 @@ class TreasureRepositoryImpl(
             val categories: Outcome<List<CategoryEntity>, DataError.Remote>,
             val subcategories: Outcome<List<SubcategoryEntity>, DataError.Remote>,
             val variants: Outcome<List<VariantEntity>, DataError.Remote>,
-            val currencies: Outcome<List<CurrencyEntity>, DataError.Remote>
+            val currencies: Outcome<List<CurrencyEntity>, DataError.Remote>,
+            val emissaries: Outcome<List<EmissaryEntity>, DataError.Remote>
         )
     }
 }

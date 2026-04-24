@@ -67,6 +67,7 @@ kotlin {
             api(libs.kotlinx.serialization.json)
             api(libs.bundles.ktor)
             api(libs.bundles.coil)
+            api("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)

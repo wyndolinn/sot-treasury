@@ -92,11 +92,7 @@ class TreasureViewModel(
         viewModelScope.launch {
             _state.update { it.copy(loadingState = LoadingState.Loading) }
 
-            treasureRepository.syncTreasure().getOrElse { error ->
-                _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
-                return@launch
-            }
-            treasureRepository.syncEmissaries().getOrElse { error ->
+            treasureRepository.syncData().getOrElse { error ->
                 _state.update { it.copy(loadingState = LoadingState.Failed(error.asUiText())) }
                 return@launch
             }

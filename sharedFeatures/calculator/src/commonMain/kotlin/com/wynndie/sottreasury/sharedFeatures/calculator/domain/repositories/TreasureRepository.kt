@@ -8,8 +8,7 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureV
 import kotlinx.coroutines.flow.Flow
 
 interface TreasureRepository {
-    suspend fun syncTreasure(): EmptyOutcome<DataError.Remote>
-    suspend fun syncEmissaries(): EmptyOutcome<DataError.Remote>
+    suspend fun syncData(): EmptyOutcome<DataError.Remote>
 
     fun getTreasure(): Flow<List<Faction>>
     fun getCurrencies(): Flow<List<TreasureValue>>
