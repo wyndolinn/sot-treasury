@@ -14,7 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.wynndie.sottreasury.sharedCore.presentation.theme.sizing
+import com.wynndie.sottreasury.sharedCore.presentation.theme.sizes
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Emissary
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureValue
@@ -38,7 +38,7 @@ fun TreasureSheetContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.large),
         modifier = modifier
             .fillMaxWidth()
             .padding(MaterialTheme.spacing.medium)
@@ -82,11 +82,12 @@ fun TreasureSheetContent(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.size(MaterialTheme.sizing.extraLarge)
+                modifier = Modifier.size(MaterialTheme.sizes.extraLarge)
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_reload),
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(MaterialTheme.sizes.small)
                 )
             }
         }

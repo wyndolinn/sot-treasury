@@ -97,7 +97,7 @@ fun AppTheme(
     CompositionLocalProvider(
         values = arrayOf(
             LocalSpacing provides Spacing(),
-            LocalSizing provides Sizing()
+            LocalSizes provides Sizes()
         )
     ) {
         MaterialTheme(

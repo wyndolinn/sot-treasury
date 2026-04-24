@@ -1,17 +1,22 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.wynndie.sottreasury.sharedCore.presentation.extensions.tileShadow
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
@@ -27,42 +32,38 @@ fun TreasureTileVariant(
     modifier: Modifier = Modifier
 ) {
 
+    val hasTreasure = amounts.filter {
+        it.key in treasure.map { item -> item.id }
+    }.any { it.value > 0 }
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
         modifier = modifier
+            .border(
+                width = if (hasTreasure) 2.dp else 1.dp,
+                color =  if (hasTreasure) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.small
+            )
             .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .padding(MaterialTheme.spacing.medium)
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight(600)
+            style = MaterialTheme.typography.titleMedium
         )
 
         treasure.forEach { item ->
             val amount = amounts[item.id] ?: 0
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight(600)
+            TreasureLayout(
+                name = item.name,
+                amount = amount,
+                values = item.values,
+                onChangeAmount = { onChangeAmount(item.id, it) },
+                modifier = Modifier.fillMaxWidth()
             )
-
-            Row {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    item.values.forEach { currency ->
-                        TreasureValue(currency)
-                    }
-                }
-
-                AmountChanger(
-                    amount = amount,
-                    onIncrement = { onChangeAmount(item.id, amount + 1) },
-                    onDecrement = { onChangeAmount(item.id, amount - 1) }
-                )
-            }
         }
     }
 }

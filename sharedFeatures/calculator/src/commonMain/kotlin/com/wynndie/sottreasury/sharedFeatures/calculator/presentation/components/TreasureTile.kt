@@ -1,17 +1,22 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.wynndie.sottreasury.sharedCore.presentation.extensions.tileShadow
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
@@ -26,33 +31,26 @@ fun TreasureTile(
 ) {
     val amount = amounts[treasure.id] ?: 0
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraExtraSmall),
         modifier = modifier
+            .border(
+                width = if (amount > 0) 2.dp else 1.dp,
+                color =  if (amount > 0) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.small
+            )
             .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .padding(MaterialTheme.spacing.medium)
     ) {
-        Text(
-            text = treasure.name,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight(600)
+        TreasureLayout(
+            name = treasure.name,
+            amount = amount,
+            values = treasure.values,
+            onChangeAmount = { onChangeAmount(treasure.id, it) },
+            modifier = Modifier.fillMaxWidth()
         )
-
-        Row {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                treasure.values.forEach { currency ->
-                    TreasureValue(currency)
-                }
-            }
-
-            AmountChanger(
-                amount = amount,
-                onIncrement = { onChangeAmount(treasure.id, amount + 1) },
-                onDecrement = { onChangeAmount(treasure.id, amount - 1) }
-            )
-        }
     }
 }
 

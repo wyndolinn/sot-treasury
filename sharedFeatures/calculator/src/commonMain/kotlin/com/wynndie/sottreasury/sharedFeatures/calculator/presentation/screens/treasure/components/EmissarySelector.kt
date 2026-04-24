@@ -24,11 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import com.wynndie.sottreasury.sharedCore.presentation.theme.sizing
+import com.wynndie.sottreasury.sharedCore.presentation.theme.sizes
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Emissary
 import kotlin.math.roundToInt
@@ -72,7 +71,7 @@ fun EmissarySelector(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(MaterialTheme.sizing.extraLarge)
+                    .size(MaterialTheme.sizes.extraLarge)
                     .clip(
                         RoundedCornerShape(
                             topStart = sliderShape.topStart,
@@ -90,19 +89,18 @@ fun EmissarySelector(
                     success = {
                         Image(
                             painter = it.painter,
-                            contentDescription = null,
-                            modifier = Modifier.padding(MaterialTheme.spacing.small)
+                            contentDescription = null
                         )
                     },
                     error = {
                         Text(
                             text = emissary.name.split(" ").map { it.first() }.joinToString(""),
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight(800),
                             color = primaryColor,
                             textAlign = TextAlign.Center
                         )
-                    }
+                    },
+                    modifier = Modifier.size(MaterialTheme.sizes.small)
                 )
             }
 
@@ -137,7 +135,6 @@ fun EmissarySelector(
                             text = "x${emissary.grades[selectedEmissaryGrade]}",
                             style = MaterialTheme.typography.labelSmall,
                             color = backgroundColor,
-                            fontWeight = FontWeight(800),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(32.dp)
                         )
@@ -153,7 +150,7 @@ fun EmissarySelector(
                 colors = sliderColors,
                 interactionSource = interactionSource,
                 modifier = Modifier
-                    .size(MaterialTheme.sizing.extraLarge)
+                    .size(MaterialTheme.sizes.extraLarge)
                     .clip(
                         RoundedCornerShape(
                             topEnd = sliderShape.topStart,

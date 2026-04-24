@@ -9,12 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.graphicsLayer
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Category
 
 @Composable
-fun TreasureCategory(
+fun CategoryLayout(
     category: Category,
     selectedSubcategory: Int,
     treasureAmounts: Map<Int, Int>,
@@ -28,14 +28,13 @@ fun TreasureCategory(
     ) {
         Text(
             text = category.name,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight(800)
+            style = MaterialTheme.typography.titleLarge
         )
 
         if (category.subcategories.size > 1) {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 category.subcategories.forEachIndexed { index, subcategory ->
@@ -48,9 +47,13 @@ fun TreasureCategory(
             }
         }
 
-        Crossfade(selectedSubcategory) {
+//        Crossfade(
+//            targetState = selectedSubcategory,
+//            modifier = Modifier.graphicsLayer(clip = false)
+//        ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
+                modifier = Modifier
             ) {
                 category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
                     subcategory.variants.forEach { variant ->
@@ -75,6 +78,6 @@ fun TreasureCategory(
                     }
                 }
             }
-        }
+//        }
     }
 }

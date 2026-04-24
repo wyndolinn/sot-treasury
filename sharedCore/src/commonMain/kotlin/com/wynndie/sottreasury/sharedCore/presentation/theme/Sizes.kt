@@ -7,7 +7,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-data class Sizing(
+data class Sizes(
     val extraSmall: Dp = 24.dp,
     val small: Dp = 32.dp,
     val medium: Dp = 40.dp,
@@ -15,8 +15,8 @@ data class Sizing(
     val extraLarge: Dp = 56.dp
 )
 
-val LocalSizing = compositionLocalOf { Sizing() }
-val MaterialTheme.sizing: Sizing
+val LocalSizes = compositionLocalOf { Sizes() }
+val MaterialTheme.sizes: Sizes
     @Composable
     @ReadOnlyComposable
-    get() = LocalSizing.current
+    get() = LocalSizes.current

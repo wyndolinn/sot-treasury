@@ -2,52 +2,39 @@ package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.t
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.SubcomposeAsyncImage
 import com.wynndie.sottreasury.sharedCore.presentation.components.states.FailedScreen
 import com.wynndie.sottreasury.sharedCore.presentation.components.states.LoadingScreen
 import com.wynndie.sottreasury.sharedCore.presentation.formatters.LoadingState
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
-import com.wynndie.sottreasury.sharedCore.presentation.theme.sizing
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
-import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.components.TreasureCategory
+import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.components.CategoryLayout
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.ChangeTreasureAmount
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.SelectFactionPage
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.TreasureAction.SelectSubcategory
+import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.components.FactionTab
 import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.components.TreasureSheetContent
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -173,48 +160,11 @@ private fun TreasureScreen(
             ) {
                 state.factions.forEachIndexed { index, faction ->
                     val selected = index == state.selectedFactionPage
-                    Tab(
+                    FactionTab(
+                        icon = faction.icon,
+                        label = faction.name,
                         selected = selected,
-                        onClick = { onAction(SelectFactionPage(index)) },
-                        icon = {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .padding(MaterialTheme.spacing.extraSmall)
-                                    .size(MaterialTheme.sizing.medium)
-                                    .clip(CircleShape)
-                                    .background(Color("FF2C3134".hexToLong()))
-                            ) {
-                                SubcomposeAsyncImage(
-                                    model = faction.icon,
-                                    contentDescription = null,
-                                    success = {
-                                        Image(
-                                            painter = it.painter,
-                                            contentDescription = null,
-                                            modifier = Modifier.padding(MaterialTheme.spacing.small)
-                                        )
-                                    },
-                                    error = {
-                                        Text(
-                                            text = faction.name.split(" ").map { it.first() }
-                                                .joinToString(""),
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight(800),
-                                            color = Color.White,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                )
-                            }
-                        },
-                        text = {
-                            Text(
-                                text = faction.name,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight(if (selected) 600 else 400),
-                            )
-                        }
+                        onSelect = { onAction(SelectFactionPage(index)) },
                     )
                 }
             }
@@ -229,14 +179,14 @@ private fun TreasureScreen(
                 .weight(1f)
         ) { pageIndex ->
             Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge),
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
                 val faction = state.factions[pageIndex]
                 faction.categories.forEach { category ->
-                    TreasureCategory(
+                    CategoryLayout(
                         category = category,
                         treasureAmounts = state.treasureAmounts,
                         selectedSubcategory = state.selectedSubcategories[faction.id]

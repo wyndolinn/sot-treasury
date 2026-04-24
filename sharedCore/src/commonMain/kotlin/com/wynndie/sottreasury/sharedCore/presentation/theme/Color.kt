@@ -2,14 +2,14 @@ package com.wynndie.sottreasury.sharedCore.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF106681)
+val primaryLight = Color(0xFF244C5C)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFBCE9FF)
-val onPrimaryContainerLight = Color(0xFF004D63)
+val onPrimaryContainerLight = Color(0xFF244C5C)
 val secondaryLight = Color(0xFF4D616B)
 val onSecondaryLight = Color(0xFFFFFFFF)
 val secondaryContainerLight = Color(0xFFD0E6F2)
-val onSecondaryContainerLight = Color(0xFF354A53)
+val onSecondaryContainerLight = Color(0xFF4D616B)
 val tertiaryLight = Color(0xFF5C5B7D)
 val onTertiaryLight = Color(0xFFFFFFFF)
 val tertiaryContainerLight = Color(0xFFE2DFFF)

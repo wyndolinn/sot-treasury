@@ -17,12 +17,12 @@ import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureValue
 
 @Composable
-fun TreasureValue(
+fun TreasureValueLayout(
     value: TreasureValue,
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraExtraSmall),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
@@ -40,19 +40,19 @@ fun TreasureValue(
             error = {
                 Text(
                     text = "${value.name}:",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         )
 
         val price = if (value.minPrice != value.maxPrice) {
-            val minPrice = value.minPrice.toString().formatAsAmount()
-            val maxPrice = value.maxPrice.toString().formatAsAmount()
-            "$minPrice–$maxPrice"
-        } else value.minPrice.toString().formatAsAmount()
+            val minPrice = value.minPrice.toString()
+            val maxPrice = value.maxPrice.toString()
+            "$minPrice – $maxPrice"
+        } else value.minPrice.toString()
 
         Text(
-            text = price,
+            text = price.formatAsAmount(),
             style = MaterialTheme.typography.bodyMedium
         )
     }
