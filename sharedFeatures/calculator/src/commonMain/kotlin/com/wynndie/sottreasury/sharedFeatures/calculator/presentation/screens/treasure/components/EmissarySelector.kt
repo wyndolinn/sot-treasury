@@ -30,6 +30,7 @@ import coil3.compose.SubcomposeAsyncImage
 import com.wynndie.sottreasury.sharedCore.presentation.theme.sizes
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Emissary
+import io.ktor.client.request.invoke
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,9 +51,9 @@ fun EmissarySelector(
         ) {
             val primaryColor = Color(emissary.color.hexToLong())
             val backgroundColor = primaryColor.copy(
-                red = primaryColor.red * 0.4f,
-                green = primaryColor.green * 0.4f,
-                blue = primaryColor.blue * 0.4f
+                red = primaryColor.red * 0.6f,
+                green = primaryColor.green * 0.6f,
+                blue = primaryColor.blue * 0.6f
             )
 
             val sliderShape = MaterialTheme.shapes.medium
@@ -89,16 +90,21 @@ fun EmissarySelector(
                     success = {
                         Image(
                             painter = it.painter,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.padding(2.dp)
                         )
                     },
                     error = {
-                        Text(
-                            text = emissary.name.split(" ").map { it.first() }.joinToString(""),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = primaryColor,
-                            textAlign = TextAlign.Center
-                        )
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = emissary.name.split(" ").map { it.first() }.joinToString(""),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = primaryColor,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     },
                     modifier = Modifier.size(MaterialTheme.sizes.small)
                 )
@@ -129,12 +135,12 @@ fun EmissarySelector(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
                             .background(sliderColors.thumbColor)
-                            .padding(4.dp)
+                            .padding(vertical = 4.dp)
                     ) {
                         Text(
                             text = "x${emissary.grades[selectedEmissaryGrade]}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = backgroundColor,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color("FF2C3134".hexToLong()),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(32.dp)
                         )

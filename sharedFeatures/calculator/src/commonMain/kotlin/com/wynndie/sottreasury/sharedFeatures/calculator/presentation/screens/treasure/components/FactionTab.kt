@@ -33,7 +33,6 @@ fun FactionTab(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .padding(MaterialTheme.spacing.extraSmall)
                     .size(MaterialTheme.sizes.medium)
                     .clip(CircleShape)
                     .background(Color("FF2C3134".hexToLong()))
@@ -44,18 +43,22 @@ fun FactionTab(
                     success = {
                         Image(
                             painter = it.painter,
-                            contentDescription = null,
-                            modifier = Modifier.padding(MaterialTheme.spacing.small)
+                            contentDescription = null
                         )
                     },
                     error = {
-                        Text(
-                            text = label.split(" ").map { it.first() }.joinToString(""),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label.split(" ").map { it.first() }.joinToString(""),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    },
+                    modifier = Modifier.size(MaterialTheme.sizes.extraSmall)
                 )
             }
         },
