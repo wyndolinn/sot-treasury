@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -30,7 +31,6 @@ import coil3.compose.SubcomposeAsyncImage
 import com.wynndie.sottreasury.sharedCore.presentation.theme.sizes
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Emissary
-import io.ktor.client.request.invoke
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,8 +115,52 @@ fun EmissarySelector(
                 onDismissRequest = { onToggleEmissaryPicker(false) }
             ) {
                 emissaries.forEachIndexed { index, faction ->
+                    val factionBackgroundColor = primaryColor.copy(
+                        red = Color(faction.color.hexToLong()).red * 0.6f,
+                        green = Color(faction.color.hexToLong()).green * 0.6f,
+                        blue = Color(faction.color.hexToLong()).blue * 0.6f
+                    )
                     DropdownMenuItem(
-                        text = { Text(faction.name) },
+                        leadingIcon = {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(MaterialTheme.sizes.small)
+                                    .clip(CircleShape)
+                                    .background(factionBackgroundColor)
+                                    .clickable { onToggleEmissaryPicker(true) }
+                            ) {
+                                SubcomposeAsyncImage(
+                                    model = faction.icon,
+                                    contentDescription = null,
+                                    success = {
+                                        Image(
+                                            painter = it.painter,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    error = {
+                                        Box(
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = faction.name.split(" ").map { it.first() }.joinToString(""),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = primaryColor,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.padding(6.dp)
+                                )
+                            }
+                        },
+                        text = {
+                            Text(
+                                text = faction.name,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         onClick = { onSelectEmissary(index) }
                     )
                 }
