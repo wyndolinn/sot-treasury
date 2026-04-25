@@ -44,9 +44,8 @@ fun TreasureSheetContent(
             .padding(MaterialTheme.spacing.medium)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-            modifier = modifier
-                .fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraExtraSmall),
+            modifier = modifier.fillMaxWidth()
         ) {
             values.forEach { currency ->
                 val (min, max) = totalValues[currency.currencyId] ?: (0 to 0)

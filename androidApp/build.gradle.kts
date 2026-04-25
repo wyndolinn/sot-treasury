@@ -28,6 +28,7 @@ android {
             versionNameSuffix = "_debug"
 
             manifestPlaceholders["usesCleartextTraffic"] = true
+            resValue("string", "app_name", "Treasury (debug)")
         }
 
         create("qa") {
@@ -45,6 +46,7 @@ android {
             )
 
             manifestPlaceholders["usesCleartextTraffic"] = true
+            resValue("string", "app_name", "Treasury (qa)")
         }
 
         getByName("release") {
