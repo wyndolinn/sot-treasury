@@ -26,17 +26,8 @@ object HttpClientFactory {
             }
 
             install(HttpTimeout) {
-                socketTimeoutMillis = 30_000L
-                requestTimeoutMillis = 30_000L
-            }
-
-            install(Logging) {
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        println("HttpClientLog: $message")
-                    }
-                }
-                level = LogLevel.INFO
+                socketTimeoutMillis = 10_000L
+                requestTimeoutMillis = 10_000L
             }
 
             defaultRequest {
