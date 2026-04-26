@@ -13,6 +13,12 @@ composeMultiplatform = "1.11.0-beta03"
 junit = "4.13.2"
 kotlin = "2.3.21"
 material3 = "1.10.0-alpha05"
+assertk = "0.28.1"
+coreKtx = "1.7.0"
+composeTest = "1.10.2"
+runner = "1.7.0"
+core = "1.7.0"
+uiTooling = "1.10.1"
 
 kotlinx-coroutines = "1.9.0"
 cmpNavigation3 = "1.1.0"
@@ -24,12 +30,8 @@ ksp = "2.3.5"
 datastore = "1.2.1"
 sqlite = "2.6.2"
 room = "2.8.4"
-assertk = "0.28.1"
-coreKtx = "1.7.0"
-composeTest = "1.10.2"
-runner = "1.7.0"
-core = "1.7.0"
-uiTooling = "1.10.1"
+datetime = "0.7.1"
+
 
 
 [libraries]
@@ -77,12 +79,14 @@ coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
 coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 
-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 
 
 [plugins]

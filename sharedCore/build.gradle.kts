@@ -64,9 +64,9 @@ kotlin {
             api(libs.koin.core)
 
             api(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.datetime)
             api(libs.bundles.ktor)
             api(libs.bundles.coil)
-            api("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
