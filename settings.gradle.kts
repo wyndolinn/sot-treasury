@@ -1,4 +1,4 @@
-rootProject.name = "SoTTreasureCalculator"
+rootProject.name = "sot-treasury"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -35,5 +35,4 @@ include(":androidApp")
 include(":sharedApp")
 include(":sharedCore")
 include(":sharedResources")
-include(":sharedFeatures:profile")
 include(":sharedFeatures:calculator")

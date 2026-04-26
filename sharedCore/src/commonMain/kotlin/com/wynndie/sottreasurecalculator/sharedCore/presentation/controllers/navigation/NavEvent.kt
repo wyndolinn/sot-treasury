@@ -1,3 +1,0 @@
-package com.wynndie.sottreasurecalculator.sharedCore.presentation.controllers.navigation
-
-interface NavEvent

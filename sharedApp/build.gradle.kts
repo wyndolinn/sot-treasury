@@ -16,7 +16,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedApp"
+        namespace = "com.wynndie.sottreasury.sharedApp"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -24,7 +24,6 @@ kotlin {
     }
     
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -50,7 +49,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.sharedCore)
             implementation(projects.sharedFeatures.calculator)
-            implementation(projects.sharedFeatures.profile)
 
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.jetbrains.navigation3.ui)
@@ -73,7 +71,6 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }

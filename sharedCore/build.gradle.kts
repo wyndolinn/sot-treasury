@@ -11,12 +11,12 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedCore"
+        namespace = "com.wynndie.sottreasury.sharedCore"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -24,7 +24,6 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -54,7 +53,6 @@ kotlin {
             api(libs.compose.foundation)
             api(libs.compose.material3)
             api(libs.compose.ui)
-            api(libs.compose.components.resources)
             api(libs.compose.uiToolingPreview)
 
             api(libs.androidx.lifecycle.viewmodel)
@@ -66,6 +64,7 @@ kotlin {
             api(libs.koin.core)
 
             api(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.datetime)
             api(libs.bundles.ktor)
             api(libs.bundles.coil)
 
@@ -88,7 +87,6 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }

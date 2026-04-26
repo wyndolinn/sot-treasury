@@ -11,12 +11,12 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-        namespace = "com.wynndie.sottreasurecalculator.sharedFeatures.calculator"
+        namespace = "com.wynndie.sottreasury.sharedFeatures.calculator"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -24,7 +24,6 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
