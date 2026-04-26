@@ -32,7 +32,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -105,7 +104,7 @@ class TreasureRepositoryImpl(
     }
 
 
-    override fun getTreasure(): Flow<List<Faction>> {
+    override fun getTreasure(): Flow<Map<Int, Faction>> {
         return combine(
             treasureDao.getAllTreasure(),
             treasureDao.getAllFactions(),
@@ -114,8 +113,8 @@ class TreasureRepositoryImpl(
             treasureDao.getAllVariants()
         ) { allTreasure, allFactions, allCategories, allSubcategories, allVariants ->
 
-            val tree =
-                mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableMap<Int, MutableList<Treasure>>>>>()
+            val factionsTree =
+                mutableMapOf<Int, MutableMap<Int, MutableMap<Int, MutableMap<Int, MutableMap<Int, Treasure>>>>>()
 
             val treasureFactions = allTreasure.associate { treasureWithValues ->
                 val treasureId = treasureWithValues.treasure.id
@@ -126,18 +125,21 @@ class TreasureRepositoryImpl(
             allTreasure.forEach { treasureWithValues ->
                 val treasureEntity = treasureWithValues.treasure
                 treasureFactions[treasureEntity.id]?.forEach { factionId ->
-                    tree.getOrPut(factionId) { mutableMapOf() }
+                    factionsTree.getOrPut(factionId) { mutableMapOf() }
                         .getOrPut(treasureEntity.category.toInt()) { mutableMapOf() }
                         .getOrPut(treasureEntity.subcategory.toInt()) { mutableMapOf() }
-                        .getOrPut(treasureEntity.variant.toInt()) { mutableListOf() }
-                        .add(treasureWithValues.toDomain())
+                        .getOrPut(treasureEntity.variant.toInt()) { mutableMapOf() }[treasureEntity.id] =
+                        treasureWithValues.toDomain()
                 }
             }
 
+            val categories = allCategories.associateBy { it.id }
+            val subcategories = allSubcategories.associateBy { it.id }
+            val variants = allVariants.associateBy { it.id }
             allFactions.mapNotNull { faction ->
-                val categoriesTree = tree[faction.id] ?: return@mapNotNull null
-                faction.toDomain(categoriesTree, allCategories, allSubcategories, allVariants)
-            }
+                val categoriesTree = factionsTree[faction.id] ?: return@mapNotNull null
+                faction.toDomain(categoriesTree, categories, subcategories, variants)
+            }.associateBy { it.id }
         }
     }
 

@@ -12,21 +12,20 @@ data class FactionEntity(
     val icon: String
 ) {
     fun toDomain(
-        categoriesTree: Map<Int, Map<Int, Map<Int, List<Treasure>>>>,
-        categories: List<CategoryEntity>,
-        subcategories: List<SubcategoryEntity>,
-        variants: List<VariantEntity>
+        categoriesTree: Map<Int, Map<Int, Map<Int, Map<Int, Treasure>>>>,
+        categories: Map<Int, CategoryEntity>,
+        subcategories: Map<Int, SubcategoryEntity>,
+        variants: Map<Int, VariantEntity>
     ): Faction {
         return Faction(
             id = id,
             name = name,
             icon = icon,
             categories = categoriesTree.mapNotNull { (categoryId, subcategoriesTree) ->
-                categories
-                    .find { it.id == categoryId }
+                categories[categoryId]
                     ?.toDomain(subcategoriesTree, subcategories, variants)
                     ?: return@mapNotNull null
-            }
+            }.associateBy { it.id }
         )
     }
 

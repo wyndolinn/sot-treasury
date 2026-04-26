@@ -11,7 +11,7 @@ data class VariantEntity(
     val name: String,
     val icon: String
 ) {
-    fun toDomain(treasure: List<Treasure>): Variant {
+    fun toDomain(treasure: Map<Int, Treasure>): Variant {
         return Variant(
             id = id,
             name = name,

@@ -1,6 +1,5 @@
 package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.treasure.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,10 +26,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil3.compose.SubcomposeAsyncImage
+import com.wynndie.sottreasury.sharedCore.presentation.extensions.getInitials
 import com.wynndie.sottreasury.sharedCore.presentation.theme.sizes
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Emissary
+import com.wynndie.sottreasury.sharedFeatures.calculator.presentation.components.AsyncImage
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,31 +81,16 @@ fun EmissarySelector(
                             bottomEnd = CornerSize(0.dp)
                         )
                     )
-                    .background(backgroundColor)
+                    .background(sliderColors.inactiveTrackColor)
                     .clickable { onToggleEmissaryPicker(true) }
             ) {
-                SubcomposeAsyncImage(
-                    model = emissary.icon,
-                    contentDescription = null,
-                    success = {
-                        Image(
-                            painter = it.painter,
-                            contentDescription = null,
-                            modifier = Modifier.padding(2.dp)
-                        )
-                    },
-                    error = {
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = emissary.name.split(" ").map { it.first() }.joinToString(""),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = primaryColor,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    },
+                AsyncImage(
+                    url = emissary.icon,
+                    contentDescription = emissary.name,
+                    error = emissary.name.getInitials(),
+                    errorStyle = MaterialTheme.typography.titleSmall,
+                    errorColor = primaryColor,
+                    contentSpacing = 2.dp,
                     modifier = Modifier.size(MaterialTheme.sizes.small)
                 )
             }
@@ -114,11 +99,12 @@ fun EmissarySelector(
                 expanded = isEmissaryPickerOpen,
                 onDismissRequest = { onToggleEmissaryPicker(false) }
             ) {
-                emissaries.forEachIndexed { index, faction ->
+                emissaries.forEachIndexed { index, emissary ->
+                    val factionColor = Color(emissary.color.hexToLong())
                     val factionBackgroundColor = primaryColor.copy(
-                        red = Color(faction.color.hexToLong()).red * 0.6f,
-                        green = Color(faction.color.hexToLong()).green * 0.6f,
-                        blue = Color(faction.color.hexToLong()).blue * 0.6f
+                        red = factionColor.red * 0.6f,
+                        green = factionColor.green * 0.6f,
+                        blue = factionColor.blue * 0.6f
                     )
                     DropdownMenuItem(
                         leadingIcon = {
@@ -130,34 +116,19 @@ fun EmissarySelector(
                                     .background(factionBackgroundColor)
                                     .clickable { onToggleEmissaryPicker(true) }
                             ) {
-                                SubcomposeAsyncImage(
-                                    model = faction.icon,
-                                    contentDescription = null,
-                                    success = {
-                                        Image(
-                                            painter = it.painter,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    error = {
-                                        Box(
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = faction.name.split(" ").map { it.first() }.joinToString(""),
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = primaryColor,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                    },
+                                AsyncImage(
+                                    url = emissary.icon,
+                                    contentDescription = emissary.name,
+                                    error = emissary.name.getInitials(),
+                                    errorStyle = MaterialTheme.typography.labelMedium,
+                                    errorColor = factionColor,
                                     modifier = Modifier.padding(6.dp)
                                 )
                             }
                         },
                         text = {
                             Text(
-                                text = faction.name,
+                                text = emissary.name,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         },

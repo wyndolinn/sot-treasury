@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface TreasureRepository {
     suspend fun syncData(): EmptyOutcome<DataError.Remote>
 
-    fun getTreasure(): Flow<List<Faction>>
+    fun getTreasure(): Flow<Map<Int, Faction>>
     fun getCurrencies(): Flow<List<TreasureValue>>
     fun getEmissaries(): Flow<List<Emissary>>
 }

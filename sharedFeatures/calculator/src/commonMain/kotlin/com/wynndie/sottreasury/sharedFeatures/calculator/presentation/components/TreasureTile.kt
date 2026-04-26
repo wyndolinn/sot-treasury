@@ -10,26 +10,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wynndie.sottreasury.sharedCore.presentation.extensions.tileShadow
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
-import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureValue
 
 @Composable
 fun TreasureTile(
-    treasure: Treasure,
-    amounts: Map<Int, Int>,
+    id: Int,
+    name: String,
+    values: List<TreasureValue>,
+    amount: Int,
     onChangeAmount: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val amount = amounts[treasure.id] ?: 0
     Column(
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraExtraSmall),
         modifier = modifier
@@ -45,10 +40,10 @@ fun TreasureTile(
             .padding(MaterialTheme.spacing.medium)
     ) {
         TreasureLayout(
-            name = treasure.name,
+            name = name,
             amount = amount,
-            values = treasure.values,
-            onChangeAmount = { onChangeAmount(treasure.id, it) },
+            values = values,
+            onChangeAmount = { onChangeAmount(id, it) },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -59,16 +54,13 @@ fun TreasureTile(
 private fun TreasureTilePreview() {
     AppTheme {
         TreasureTile(
-            treasure = Treasure(
-                id = 1,
-                name = "Carrot",
-                sellableTo = emptyList(),
-                values = listOf(
-                    TreasureValue(0, "Gold", "", 600, 800),
-                    TreasureValue(1, "EmissaryValue", "", 1000, 1000)
-                )
+            id = 0,
+            name = "Carrot",
+            values = listOf(
+                TreasureValue(0, "Gold", "", 600, 800),
+                TreasureValue(1, "EmissaryValue", "", 1000, 1000)
             ),
-            amounts = mapOf(0 to 0, 1 to 3, 2 to 7),
+            amount = 2,
             onChangeAmount = { _, _ -> },
             modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )

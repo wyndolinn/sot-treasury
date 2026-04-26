@@ -50,6 +50,7 @@ android {
         }
 
         getByName("release") {
+            manifestPlaceholders += mapOf()
             isMinifyEnabled = true
             isShrinkResources = true
 
@@ -57,6 +58,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
 
             manifestPlaceholders["usesCleartextTraffic"] = false
         }

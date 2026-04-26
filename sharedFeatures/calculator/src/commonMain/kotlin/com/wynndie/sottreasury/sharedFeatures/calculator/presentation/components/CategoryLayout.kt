@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Category
 
@@ -37,11 +36,11 @@ fun CategoryLayout(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                category.subcategories.forEachIndexed { index, subcategory ->
+                category.subcategories.values.forEach { subcategory ->
                     SubcategoryChip(
                         label = subcategory.name,
-                        selected = selectedSubcategory == index,
-                        onClickSubcategory = { onClickSubcategory(index) }
+                        selected = selectedSubcategory == subcategory.id,
+                        onClickSubcategory = { onClickSubcategory(subcategory.id) }
                     )
                 }
             }
@@ -53,21 +52,23 @@ fun CategoryLayout(
             Column(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
-                category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
+                category.subcategories[selectedSubcategory]?.let { subcategory ->
                     subcategory.variants.forEach { variant ->
-                        if (variant.id < 0) {
-                            variant.treasure.forEach { treasure ->
+                        if (variant.key < 0) {
+                            variant.value.treasure.forEach { treasure ->
                                 TreasureTile(
-                                    treasure = treasure,
-                                    amounts = treasureAmounts,
+                                    id = treasure.key,
+                                    name = treasure.value.name,
+                                    values = treasure.value.values,
+                                    amount = treasureAmounts[treasure.key] ?: 0,
                                     onChangeAmount = { id, amount -> onChangeAmount(id, amount) },
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         } else {
                             TreasureTileVariant(
-                                title = variant.name,
-                                treasure = variant.treasure,
+                                title = variant.value.name,
+                                treasure = variant.value.treasure,
                                 amounts = treasureAmounts,
                                 onChangeAmount = { id, amount -> onChangeAmount(id, amount) },
                                 modifier = Modifier.fillMaxWidth()

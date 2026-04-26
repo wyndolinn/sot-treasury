@@ -9,7 +9,7 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.TreasureV
 @Stable
 data class TreasureState(
     val loadingState: LoadingState = LoadingState.Finished,
-    val factions: List<Faction> = emptyList(),
+    val factions: Map<Int, Faction> = mapOf(),
     val currencies: List<TreasureValue> = emptyList(),
     val selectedFactionPage: Int = 0,
     val selectedSubcategories: Map<Int, Map<Int, Int>> = mapOf(),

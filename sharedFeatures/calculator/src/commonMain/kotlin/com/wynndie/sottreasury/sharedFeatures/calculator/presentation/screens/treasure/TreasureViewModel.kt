@@ -104,10 +104,10 @@ class TreasureViewModel(
             allEmissaries = emissaries.associateBy { it.id }
             allTreasure = treasure
                 .asSequence()
-                .flatMap { it.categories }
-                .flatMap { it.subcategories }
-                .flatMap { it.variants }
-                .flatMap { it.treasure }
+                .flatMap { it.value.categories.values }
+                .flatMap { it.subcategories.values }
+                .flatMap { it.variants.values }
+                .flatMap { it.treasure.values }
                 .associateBy { it.id }
 
             _state.update {

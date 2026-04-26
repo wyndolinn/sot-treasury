@@ -4,5 +4,5 @@ data class Variant(
     val id: Int,
     val name: String,
     val icon: String,
-    val treasure: List<Treasure>
+    val treasure: Map<Int, Treasure>
 )

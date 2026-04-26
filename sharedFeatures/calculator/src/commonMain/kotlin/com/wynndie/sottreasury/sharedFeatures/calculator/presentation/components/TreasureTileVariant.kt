@@ -23,15 +23,14 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Variant
 @Composable
 fun TreasureTileVariant(
     title: String,
-    treasure: List<Treasure>,
+    treasure: Map<Int, Treasure>,
     amounts: Map<Int, Int>,
     onChangeAmount: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    val treasureIds = remember(treasure) { treasure.map { it.id }.toSet() }
-    val hasTreasure = remember(amounts, treasureIds) {
-        amounts.any { (id, amount) -> id in treasureIds && amount > 0 }
+    val hasTreasure = remember(amounts) {
+        amounts.any { (id, amount) -> id in treasure.keys && amount > 0 }
     }
 
     Column(
@@ -53,7 +52,7 @@ fun TreasureTileVariant(
             style = MaterialTheme.typography.titleMedium
         )
 
-        treasure.forEach { item ->
+        treasure.values.forEach { item ->
             val amount = amounts[item.id] ?: 0
             TreasureLayout(
                 name = item.name,
@@ -74,8 +73,8 @@ private fun TreasureTilePreview() {
             id = 0,
             name = "Cooked",
             icon = "",
-            treasure = listOf(
-                Treasure(
+            treasure = mapOf(
+                0 to Treasure(
                     id = 0,
                     name = "Potato",
                     sellableTo = emptyList(),
@@ -84,7 +83,7 @@ private fun TreasureTilePreview() {
                         TreasureValue(1, "EmissaryValue", "", 1000, 1000)
                     )
                 ),
-                Treasure(
+                1 to Treasure(
                     id = 1,
                     name = "Carrot",
                     sellableTo = emptyList(),
@@ -93,7 +92,7 @@ private fun TreasureTilePreview() {
                         TreasureValue(1, "EmissaryValue", "", 1000, 1000)
                     )
                 ),
-                Treasure(
+                2 to Treasure(
                     id = 2,
                     name = "Cabbage",
                     sellableTo = emptyList(),

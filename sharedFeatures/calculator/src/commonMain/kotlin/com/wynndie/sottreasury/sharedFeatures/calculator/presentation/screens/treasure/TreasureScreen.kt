@@ -2,7 +2,6 @@ package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.t
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -128,7 +126,7 @@ private fun TreasureScreen(
                 edgePadding = 0.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                state.factions.forEachIndexed { index, faction ->
+                state.factions.values.forEachIndexed { index, faction ->
                     val selected = index == state.selectedFactionPage
                     FactionTab(
                         icon = faction.icon,
@@ -144,19 +142,18 @@ private fun TreasureScreen(
             state = pagerState,
             pageSpacing = MaterialTheme.spacing.medium,
             contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
-            beyondViewportPageCount = state.factions.size,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) { pageIndex ->
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge),
-                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                modifier = Modifier.fillMaxSize()
             ) {
-                val faction = state.factions[pageIndex]
-                faction.categories.forEach { category ->
-                    val selectedSubcategory = remember(state.selectedSubcategories[faction.id]) {
-                        state.selectedSubcategories[faction.id]?.get(category.id) ?: 0
+                val categories = state.factions[pageIndex]?.categories?.values?.toList().orEmpty()
+                items(categories, key = { it.id }) { category ->
+                    val selectedSubcategory = remember(state.selectedSubcategories[pageIndex]) {
+                        state.selectedSubcategories[pageIndex]?.get(category.id) ?: 0
                     }
 
                     CategoryLayout(
@@ -164,7 +161,7 @@ private fun TreasureScreen(
                         treasureAmounts = state.treasureAmounts,
                         selectedSubcategory = selectedSubcategory,
                         onClickSubcategory = {
-                            onAction(SelectSubcategory(faction.id, category.id, it))
+                            onAction(SelectSubcategory(pageIndex, category.id, it))
                         },
                         onChangeAmount = { treasureId: Int, amount: Int ->
                             onAction(ChangeTreasureAmount(treasureId, amount))
