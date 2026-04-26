@@ -11,7 +11,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
