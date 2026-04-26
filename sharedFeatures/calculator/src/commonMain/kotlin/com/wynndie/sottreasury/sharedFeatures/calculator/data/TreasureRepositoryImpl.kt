@@ -48,7 +48,7 @@ class TreasureRepositoryImpl(
             val categories = fetchSheet("Categories!A:C") { it.toCategoryEntities() }
             val subcategories = fetchSheet("Subcategories!A:C") { it.toSubcategoryEntities() }
             val variants = fetchSheet("Variants!A:C") { it.toVariantEntities() }
-            val currencies = fetchSheet("Currencies!A:C") { it.toCurrencyEntities() }
+            val currencies = fetchSheet("Currencies!A:D") { it.toCurrencyEntities() }
             val emissaries = fetchSheet("Emissaries!A:E") { it.toEmissaryEntityList() }
 
             SyncResults(
@@ -144,8 +144,12 @@ class TreasureRepositoryImpl(
     }
 
     override fun getCurrencies(): Flow<List<TreasureValue>> {
-        return treasureDao.getAllCurrencies().map {
-            it.map { currencies -> currencies.toDomain() }
+        return treasureDao.getAllCurrencies().map { currencies ->
+            val result = currencies
+                .sortedBy { it.sortOrder }
+                .map { currency -> currency.toDomain() }
+            println("PRINTLINE: result $result")
+            result
         }
     }
 

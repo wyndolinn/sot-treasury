@@ -27,7 +27,7 @@ import com.wynndie.sottreasury.sharedFeatures.calculator.data.local.entities.Var
         EmissaryEntity::class,
         CurrencyEntity::class
     ],
-    version = 3
+    version = 4
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -69,6 +69,24 @@ abstract class AppDatabase : RoomDatabase() {
                             icon TEXT NOT NULL,
                             PRIMARY KEY(id)
                         )
+                    """.trimIndent()
+                )
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
+                    """
+                        ALTER TABLE TreasureValueEntity
+                        ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0
+                    """.trimIndent()
+                )
+
+                connection.execSQL(
+                    """
+                        ALTER TABLE CurrencyEntity
+                        ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0
                     """.trimIndent()
                 )
             }

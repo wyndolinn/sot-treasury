@@ -22,9 +22,7 @@ data class CategoryEntity(
             name = name,
             icon = icon,
             subcategories = subcategoriesTree.mapNotNull { (subcategoryId, variantsTree) ->
-                subcategories[subcategoryId]
-                    ?.toDomain(variantsTree, variants)
-                    ?: return@mapNotNull null
+                subcategories[subcategoryId]?.toDomain(variantsTree, variants)
             }.associateBy { it.id }
         )
     }

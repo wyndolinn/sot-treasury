@@ -16,7 +16,7 @@ data class TreasureWithValues(
             id = treasure.id,
             name = treasure.name,
             sellableTo = treasure.sellableTo.split(",").map { it.toInt() },
-            values = values.map { it.toDomain() }
+            values = values.sortedBy { it.sortOrder }.map { it.toDomain() }
         )
     }
 }

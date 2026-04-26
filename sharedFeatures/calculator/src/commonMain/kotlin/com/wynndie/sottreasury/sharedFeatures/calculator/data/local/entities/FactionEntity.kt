@@ -22,9 +22,7 @@ data class FactionEntity(
             name = name,
             icon = icon,
             categories = categoriesTree.mapNotNull { (categoryId, subcategoriesTree) ->
-                categories[categoryId]
-                    ?.toDomain(subcategoriesTree, subcategories, variants)
-                    ?: return@mapNotNull null
+                categories[categoryId]?.toDomain(subcategoriesTree, subcategories, variants)
             }.associateBy { it.id }
         )
     }

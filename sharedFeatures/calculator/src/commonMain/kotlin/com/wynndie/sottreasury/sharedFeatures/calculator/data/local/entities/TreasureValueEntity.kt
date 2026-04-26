@@ -12,7 +12,8 @@ data class TreasureValueEntity(
     val name: String,
     val icon: String,
     val minPrice: Int,
-    val maxPrice: Int
+    val maxPrice: Int,
+    val sortOrder: Int
 ) {
     fun toDomain(): TreasureValue {
         return TreasureValue(

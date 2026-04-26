@@ -20,7 +20,8 @@ data class TreasureValueDto(
             name = currency.name,
             icon = currency.icon,
             minPrice = minValue ?: maxValue ?: return null,
-            maxPrice = maxValue ?: minValue ?: return null
+            maxPrice = maxValue ?: minValue ?: return null,
+            sortOrder = currency.sortOrder
         )
     }
 
