@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -50,19 +47,27 @@ fun TreasureScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BottomSheetScaffold(
+        sheetSwipeEnabled = state.loadingState is LoadingState.Finished,
         sheetContent = {
-            TreasureSheetContent(
-                values = state.currencies,
-                totalValues = state.totalValues,
-                emissaries = state.emissaries,
-                isEmissaryPickerOpen = state.isEmissaryPickerOpen,
-                selectedEmissary = state.selectedEmissary,
-                selectedEmissaryLevel = state.emissaryGrade,
-                onToggleEmissaryPicker = { viewModel.onAction(TreasureAction.ToggleEmissaryPicker(it)) },
-                onSelectEmissary = { viewModel.onAction(TreasureAction.SelectEmissary(it)) },
-                onSelectEmissaryGrade = { viewModel.onAction(TreasureAction.SelectEmissaryGrade(it)) },
-                onReloadData = { viewModel.onAction(TreasureAction.ReloadData) }
-            )
+            if (state.loadingState is LoadingState.Finished) {
+                TreasureSheetContent(
+                    values = state.currencies,
+                    totalValues = state.totalValues,
+                    emissaries = state.emissaries,
+                    isEmissaryPickerOpen = state.isEmissaryPickerOpen,
+                    selectedEmissary = state.selectedEmissary,
+                    selectedEmissaryLevel = state.emissaryGrade,
+                    onToggleEmissaryPicker = {
+                        viewModel.onAction(TreasureAction.ToggleEmissaryPicker(it))
+                    },
+                    onSelectEmissary = { viewModel.onAction(TreasureAction.SelectEmissary(it)) },
+                    onSelectEmissaryGrade = {
+                        viewModel.onAction(TreasureAction.SelectEmissaryGrade(it))
+                    },
+                    onReloadData = { viewModel.onAction(TreasureAction.ReloadData) },
+                    onClearAmounts = { viewModel.onAction(TreasureAction.ClearAmounts) }
+                )
+            }
         }
     ) { innerPadding ->
         Crossfade(targetState = state.loadingState) { loadingState ->

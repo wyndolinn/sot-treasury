@@ -30,4 +30,7 @@
 
     <string name="retry">Retry</string>
     <string name="go_offline">Stay offline</string>
+
+    <string name="load_data">Load data</string>
+    <string name="clear_amounts">Clear amounts</string>
 </resources>

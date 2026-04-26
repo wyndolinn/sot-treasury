@@ -78,6 +78,7 @@ class TreasureViewModel(
         when (action) {
             TreasureAction.ReloadData -> syncData()
             TreasureAction.GoOffline -> goOffline()
+            TreasureAction.ClearAmounts -> clearAmounts()
             is TreasureAction.SelectEmissary -> selectEmissary(action.id)
             is TreasureAction.SelectFactionPage -> selectFactionPage(action.id)
             is TreasureAction.ToggleEmissaryPicker -> toggleEmissaryPicker(action.open)
@@ -136,6 +137,15 @@ class TreasureViewModel(
     private fun goOffline() {
         _state.update {
             it.copy(loadingState = LoadingState.Finished)
+        }
+    }
+
+    private fun clearAmounts() {
+        _state.update {
+            it.copy(
+                treasureAmounts = mapOf(),
+                valuePerEmissary = mapOf()
+            )
         }
     }
 
