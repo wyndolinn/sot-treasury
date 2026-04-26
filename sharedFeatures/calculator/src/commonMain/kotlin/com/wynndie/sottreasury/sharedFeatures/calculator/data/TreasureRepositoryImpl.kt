@@ -166,7 +166,7 @@ class TreasureRepositoryImpl(
     ): Deferred<Outcome<T, DataError.Remote>> {
         return async {
             safeCall<ResponseDto> {
-                httpClient.get("$BASE_URL/$SHEET_ID_TEST/values/$sheetName") {
+                httpClient.get("$BASE_URL/$SHEET_ID_PROD/values/$sheetName") {
                     parameter("key", API_KEY)
                 }
             }.map { mapper(it) }
