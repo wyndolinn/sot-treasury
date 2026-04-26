@@ -9,14 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wynndie.sottreasury.sharedCore.presentation.extensions.tileShadow
 import com.wynndie.sottreasury.sharedCore.presentation.theme.AppTheme
 import com.wynndie.sottreasury.sharedCore.presentation.theme.spacing
 import com.wynndie.sottreasury.sharedFeatures.calculator.domain.models.Treasure
@@ -32,16 +29,17 @@ fun TreasureTileVariant(
     modifier: Modifier = Modifier
 ) {
 
-    val hasTreasure = amounts.filter {
-        it.key in treasure.map { item -> item.id }
-    }.any { it.value > 0 }
+    val treasureIds = remember(treasure) { treasure.map { it.id }.toSet() }
+    val hasTreasure = remember(amounts, treasureIds) {
+        amounts.any { (id, amount) -> id in treasureIds && amount > 0 }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
         modifier = modifier
             .border(
                 width = if (hasTreasure) 2.dp else 1.dp,
-                color =  if (hasTreasure) {
+                color = if (hasTreasure) {
                     MaterialTheme.colorScheme.primaryContainer
                 } else MaterialTheme.colorScheme.secondaryContainer,
                 shape = MaterialTheme.shapes.small

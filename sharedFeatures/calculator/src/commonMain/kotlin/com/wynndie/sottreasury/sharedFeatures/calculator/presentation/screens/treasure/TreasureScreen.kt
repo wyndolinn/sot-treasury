@@ -2,13 +2,17 @@ package com.wynndie.sottreasury.sharedFeatures.calculator.presentation.screens.t
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,9 +23,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,34 +51,11 @@ fun TreasureScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val totalValues by derivedStateOf {
-        val emissaryMultiplier = state.emissaryMultiplier
-        val valuePerEmissary = state.valuePerEmissary
-        valuePerEmissary.entries
-            .flatMap { (emissaryId, valuesMap) ->
-                val multiplier = if (emissaryId == state.selectedEmissary) {
-                    emissaryMultiplier
-                } else 1f
-
-                valuesMap.map { (currencyId, value) ->
-                    val minValue = (value.first * multiplier).toInt()
-                    val maxValue = (value.second * multiplier).toInt()
-                    currencyId to (minValue to maxValue)
-                }
-            }
-            .groupBy { it.first }
-            .mapValues { (_, entries) ->
-                val totalMin = entries.sumOf { it.second.first }
-                val totalMax = entries.sumOf { it.second.second }
-                totalMin to totalMax
-            }
-    }
-
     BottomSheetScaffold(
         sheetContent = {
             TreasureSheetContent(
                 values = state.currencies,
-                totalValues = totalValues,
+                totalValues = state.totalValues,
                 emissaries = state.emissaries,
                 isEmissaryPickerOpen = state.isEmissaryPickerOpen,
                 selectedEmissary = state.selectedEmissary,
@@ -162,28 +144,29 @@ private fun TreasureScreen(
             state = pagerState,
             pageSpacing = MaterialTheme.spacing.medium,
             contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.medium),
+            beyondViewportPageCount = state.factions.size,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) { pageIndex ->
             Column(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             ) {
                 val faction = state.factions[pageIndex]
                 faction.categories.forEach { category ->
+                    val selectedSubcategory = remember(state.selectedSubcategories[faction.id]) {
+                        state.selectedSubcategories[faction.id]?.get(category.id) ?: 0
+                    }
+
                     CategoryLayout(
                         category = category,
                         treasureAmounts = state.treasureAmounts,
-                        selectedSubcategory = state.selectedSubcategories[faction.id]
-                            ?.get(category.id)
-                            ?: 0,
+                        selectedSubcategory = selectedSubcategory,
                         onClickSubcategory = {
                             onAction(SelectSubcategory(faction.id, category.id, it))
                         },
-                        onChangeAmount = { treasureId, amount ->
+                        onChangeAmount = { treasureId: Int, amount: Int ->
                             onAction(ChangeTreasureAmount(treasureId, amount))
                         },
                         modifier = Modifier

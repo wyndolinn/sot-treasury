@@ -26,18 +26,22 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TreasureRepositoryImpl(
     private val httpClient: HttpClient,
     private val treasureDao: TreasureDao
 ) : TreasureRepository {
-    override suspend fun syncData(): EmptyOutcome<DataError.Remote> {
+    override suspend fun syncData(): EmptyOutcome<DataError.Remote> = withContext(Dispatchers.IO) {
         val syncResult = coroutineScope {
             val treasure = fetchSheet("Treasure!A:G") { it.toTreasureEntities() }
             val treasureValues = fetchSheet("Treasure_Values!A:D") { it.toTreasureValueDtoList() }
@@ -60,14 +64,22 @@ class TreasureRepositoryImpl(
             )
         }
 
-        val treasureEntities = syncResult.treasure.getOrElse { return Outcome.Error(it) }
-        val treasureValuesDto = syncResult.treasureValues.getOrElse { return Outcome.Error(it) }
-        val factionEntities = syncResult.factions.getOrElse { return Outcome.Error(it) }
-        val categoryEntities = syncResult.categories.getOrElse { return Outcome.Error(it) }
-        val subcategoryEntities = syncResult.subcategories.getOrElse { return Outcome.Error(it) }
-        val variantEntities = syncResult.variants.getOrElse { return Outcome.Error(it) }
-        val currencyEntities = syncResult.currencies.getOrElse { return Outcome.Error(it) }
-        val emissaryEntities = syncResult.emissaries.getOrElse { return Outcome.Error(it) }
+        val treasureEntities = syncResult.treasure
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val treasureValuesDto = syncResult.treasureValues
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val factionEntities = syncResult.factions
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val categoryEntities = syncResult.categories
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val subcategoryEntities = syncResult.subcategories
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val variantEntities = syncResult.variants
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val currencyEntities = syncResult.currencies
+            .getOrElse { return@withContext Outcome.Error(it) }
+        val emissaryEntities = syncResult.emissaries
+            .getOrElse { return@withContext Outcome.Error(it) }
 
 
         coroutineScope {
@@ -89,7 +101,7 @@ class TreasureRepositoryImpl(
             }
         }.join()
 
-        return Outcome.Success(Unit)
+        return@withContext Outcome.Success(Unit)
     }
 
 

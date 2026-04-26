@@ -47,13 +47,11 @@ fun CategoryLayout(
             }
         }
 
-//        Crossfade(
-//            targetState = selectedSubcategory,
-//            modifier = Modifier.graphicsLayer(clip = false)
-//        ) {
+        Crossfade(
+            targetState = selectedSubcategory
+        ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
-                modifier = Modifier
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
             ) {
                 category.subcategories.getOrNull(selectedSubcategory)?.let { subcategory ->
                     subcategory.variants.forEach { variant ->
@@ -78,6 +76,6 @@ fun CategoryLayout(
                     }
                 }
             }
-//        }
+        }
     }
 }
